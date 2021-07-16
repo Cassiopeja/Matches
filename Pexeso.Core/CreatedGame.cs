@@ -4,13 +4,14 @@ using System.Linq;
 
 namespace Pexeso.Core
 {
-    public class PreparedGame
+    public class CreatedGame
     {
         private readonly List<Player> _players;
         private readonly GameParameters _gameParameters;
         private readonly object _locker = new();
+        
 
-        public PreparedGame(GameParameters parameters, Player player)
+        public CreatedGame(GameParameters parameters, Player player)
         {
             Id = new Guid().ToString();
             _players = new List<Player> {player};
@@ -18,6 +19,7 @@ namespace Pexeso.Core
         }
 
         public string Id { get; }
+        public IReadOnlyList<Player> Players => _players.AsReadOnly();
 
         public bool ConnectTo(Player player)
         {
