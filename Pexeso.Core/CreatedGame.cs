@@ -13,7 +13,7 @@ namespace Pexeso.Core
 
         public CreatedGame(GameParameters parameters, Player player)
         {
-            Id = new Guid().ToString();
+            Id = Guid.NewGuid().ToString();
             _players = new List<Player> {player};
             _gameParameters = parameters;
         }

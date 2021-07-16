@@ -1,5 +1,3 @@
-using System;
-
 namespace Pexeso.Core
 {
     public class Player

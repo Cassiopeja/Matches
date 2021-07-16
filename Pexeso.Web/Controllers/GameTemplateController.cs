@@ -8,7 +8,7 @@ using Pexeso.Infrastructure;
 namespace Pexeso.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GameTemplateController : ControllerBase
     {
         private readonly IGameManager _gameManager;

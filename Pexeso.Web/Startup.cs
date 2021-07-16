@@ -24,6 +24,11 @@ namespace Pexeso
             services.AddSingleton<IGameManager, GameManager>();
             services.AddControllers();
             services.AddSignalR();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAny", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+            services.AddAutoMapper(typeof(Startup));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -38,6 +43,7 @@ namespace Pexeso
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("AllowAny");
             }
             else
             {
@@ -65,7 +71,7 @@ namespace Pexeso
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-
+            
                 if (env.IsDevelopment())
                 {
                     // run npm process with client app

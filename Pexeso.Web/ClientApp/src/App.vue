@@ -1,33 +1,21 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <span class="text-h3">PEXESO</span>
-      </div>
-    </v-app-bar>
-
-    <v-main>
-      <Main/>
+    <Navbar />
+    <v-main class="grey lighten-4">
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Main from './components/Main';
+import Navbar from "@/components/Navbar";
 
 export default {
   name: 'App',
-
-  components: {
-    Main,
-  },
-
-  data: () => ({
-    //
-  }),
+  components: {Navbar},
 };
 </script>
+
+<style lang="scss">
+
+</style>
