@@ -11,7 +11,7 @@ namespace Pexeso.Core.UnitTests
             {
                urls.Add($"front{i}"); 
             }
-            return new(urls, "back");
+            return new("test", urls, "back");
         }
 
         public static List<Player> CreatePlayers(int num)

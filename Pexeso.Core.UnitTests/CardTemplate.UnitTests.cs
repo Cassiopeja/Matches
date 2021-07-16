@@ -12,7 +12,7 @@ namespace Pexeso.Core.UnitTests
         {
             Action action = () =>
             {
-                var unused = new CardTemplate(null, "backImage");
+                var unused = new CardTemplate("test", null, "backImage");
             };
 
             action.Should().Throw<ArgumentNullException>();
@@ -23,7 +23,7 @@ namespace Pexeso.Core.UnitTests
         {
             Action action = () =>
             {
-                var unused = new CardTemplate(new []{"front1", "front2"}, null);
+                var unused = new CardTemplate("test", new []{"front1", "front2"}, null);
             };
 
             action.Should().Throw<ArgumentNullException>();
@@ -34,7 +34,7 @@ namespace Pexeso.Core.UnitTests
         {
             Action action = () =>
             {
-                var unused = new CardTemplate(new List<string>(), "backImage");
+                var unused = new CardTemplate("test", new List<string>(), "backImage");
             };
 
             action.Should().Throw<ArgumentException>();
@@ -44,7 +44,7 @@ namespace Pexeso.Core.UnitTests
         public void ShouldCreateCardTemplateWhenAllParametersIncluded()
         {
             var backImage = "backImage";
-            var cardTemplate = new CardTemplate(new []{"front1", "front2", "front3"}, backImage);
+            var cardTemplate = new CardTemplate("test", new []{"front1", "front2", "front3"}, backImage);
 
             cardTemplate.TotalCount.Should().Be(3);
             cardTemplate.BackCardImageUrl.Should().Be(backImage);
