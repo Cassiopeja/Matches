@@ -57,6 +57,7 @@ namespace Pexeso.Core
                         : GameState.OpenedTwoNotEqualsCards;
                     if (GameState == GameState.OpenedTwoEqualCards)
                     {
+                        _currentPlayer.Score++;
                         RemoveCard(_firstMove.Row, _firstMove.Column);
                         RemoveCard(_secondMove.Row, _secondMove.Column);
                     }
@@ -104,6 +105,14 @@ namespace Pexeso.Core
                 GameState = GameState.WaitingForFirstMove;
                 return _currentPlayer;
             }
+        }
+
+        public IReadOnlyCollection<Player> GetCurrentPlayers()
+        {
+            var players = _players.ToList();
+            players.Add(_currentPlayer);
+
+            return players.AsReadOnly();
         }
 
         private bool IsPlayerTurn(string playerId)
