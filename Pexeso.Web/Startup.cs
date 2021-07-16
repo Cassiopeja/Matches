@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Pexeso.Hubs;
 using Pexeso.Infrastructure;
 using VueCliMiddleware;
 
@@ -20,8 +21,9 @@ namespace Pexeso
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IGameManager, DummyGameManager>();
-            services.AddControllersWithViews();
+            services.AddSingleton<IGameManager, GameManager>();
+            services.AddControllers();
+            services.AddSignalR();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -56,9 +58,8 @@ namespace Pexeso
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapControllers();
+                endpoints.MapHub<GameHub>("/gameHub");
             });
 
             app.UseSpa(spa =>

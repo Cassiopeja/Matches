@@ -1,12 +1,17 @@
-using System.Collections.Concurrent;
+using System.Collections.Generic;
+using CSharpFunctionalExtensions;
 using Pexeso.Core;
 
 namespace Pexeso.Infrastructure
 {
     public interface IGameManager
     {
-        ConcurrentBag<CreatedGame> CreatedGames { get; }
-        ConcurrentBag<Game> StartedGames { get; }
-        ConcurrentBag<CardTemplate> CardTemplates { get; }
+        IReadOnlyList<CreatedGame> CreatedGames { get; }
+        IReadOnlyList<Game> StartedGames { get; }
+        IReadOnlyList<CardTemplate> CardTemplates { get; }
+        Result<CreatedGame> CreateNewGame(GameParameters gameParameters, Player player);
+        Result<Game> StartGame(string gameId, string playerId);
+        Result FinishGame(string gameId);
+        Result<CreatedGame> FindCreatedGame(string gameId);
     }
 }

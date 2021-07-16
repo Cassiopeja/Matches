@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CSharpFunctionalExtensions;
 
 namespace Pexeso.Core
 {
     public class CreatedGame
     {
-        private readonly List<Player> _players;
         private readonly GameParameters _gameParameters;
         private readonly object _locker = new();
-        
+        private readonly List<Player> _players;
 
         public CreatedGame(GameParameters parameters, Player player)
         {
@@ -20,23 +20,43 @@ namespace Pexeso.Core
 
         public string Id { get; }
         public IReadOnlyList<Player> Players => _players.AsReadOnly();
+        public GameParameters GameParameters => _gameParameters;
 
-        public bool ConnectTo(Player player)
+        public Result Join(Player player)
         {
             lock (_locker)
             {
-                if (_players.Any(pl => pl.ConnectionId == player.ConnectionId)) return false;
+                if (_players.Any(pl => pl.ConnectionId == player.ConnectionId))
+                    return Result.Failure("The player already connected to the game");
 
                 _players.Add(player);
-                return true;
             }
+
+            return Result.Success();
+        }
+
+        public Result Leave(string playerId)
+        {
+            lock (_locker)
+            {
+                var player = _players.FirstOrDefault(pl => pl.ConnectionId == playerId);
+                if (player == null)
+                {
+                    return Result.Failure("Player does not in the game"); 
+                }
+                
+                _players.Remove(player);
+            }
+
+            return Result.Success();
         }
 
         public Game Start()
         {
             lock (_locker)
             {
-                return new(Id, _gameParameters, _players);
+                
+                return new Game(Id, _gameParameters, _players);
             }
         }
     }
