@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Pexeso.Infrastructure;
 using VueCliMiddleware;
 
-namespace pexeso
+namespace Pexeso
 {
     public class Startup
     {
@@ -21,7 +20,7 @@ namespace pexeso
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddSingleton<IGameManager, DummyGameManager>();
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
