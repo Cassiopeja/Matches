@@ -23,7 +23,8 @@ namespace Pexeso
         {
             services.AddSingleton<IGameManager, GameManager>();
             services.AddControllers();
-            services.AddSignalR();
+            services.AddSignalR(opt=>
+                opt.EnableDetailedErrors = true);
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAny", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
