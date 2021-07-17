@@ -3,7 +3,9 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
 import Axios from 'axios';
+import gameHubPlugin from "@/plugins/gameHubPlugin";
 
+Vue.use(gameHubPlugin);
 Vue.prototype.$http = Axios;
 Vue.config.productionTip = false
 
