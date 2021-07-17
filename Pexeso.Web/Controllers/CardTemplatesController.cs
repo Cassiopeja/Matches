@@ -9,12 +9,12 @@ namespace Pexeso.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GameTemplateController : ControllerBase
+    public class CardTemplatesController : ControllerBase
     {
         private readonly IGameManager _gameManager;
         private readonly IMapper _mapper;
 
-        public GameTemplateController(IGameManager gameManager, IMapper mapper)
+        public CardTemplatesController(IGameManager gameManager, IMapper mapper)
         {
             _gameManager = gameManager;
             _mapper = mapper;
