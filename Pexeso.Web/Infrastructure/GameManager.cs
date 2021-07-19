@@ -1,25 +1,26 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using CSharpFunctionalExtensions;
 using Pexeso.Core;
+using Pexeso.Services;
 
 namespace Pexeso.Infrastructure
 {
     public class GameManager : IGameManager
     {
+        private readonly IDateTimeService _dateTimeService;
         private readonly ConcurrentDictionary<string, CardTemplate> _cardTemplates;
         private readonly ConcurrentDictionary<string, CreatedGame> _createdGames;
         private readonly ConcurrentDictionary<string, Game> _startedGames;
 
-        public GameManager()
+        public GameManager(IDateTimeService dateTimeService)
         {
+            _dateTimeService = dateTimeService;
             _createdGames = new ConcurrentDictionary<string, CreatedGame>();
             _startedGames = new ConcurrentDictionary<string, Game>();
             _cardTemplates = new ConcurrentDictionary<string, CardTemplate>();
-            var frontUrls = Enumerable.Range(1, 32).Select(index => $"front{index}").ToArray();
-            var templateName = "test";
-            _cardTemplates.TryAdd(templateName, new CardTemplate(templateName, frontUrls, "back"));
         }
 
         public IReadOnlyList<CreatedGame> CreatedGames => _createdGames.Values.ToList();
@@ -30,7 +31,7 @@ namespace Pexeso.Infrastructure
 
         public Result<CreatedGame> CreateNewGame(GameParameters gameParameters, Player player)
         {
-            var game = new CreatedGame(gameParameters, player);
+            var game = new CreatedGame(gameParameters, player, _dateTimeService.Now);
             if (!_createdGames.TryAdd(game.Id, game)) Result.Failure("Can not create new game");
 
             return Result.Success(game);

@@ -11,14 +11,18 @@ namespace Pexeso.Core
         private readonly object _locker = new();
         private readonly List<Player> _players;
 
-        public CreatedGame(GameParameters parameters, Player player)
+        public CreatedGame(GameParameters parameters, Player player, DateTimeOffset createdDate)
         {
             Id = Guid.NewGuid().ToString();
             _players = new List<Player> {player};
             _gameParameters = parameters;
+            CreatedBy = player.Name;
+            CreatedOn = createdDate;
         }
 
         public string Id { get; }
+        public string CreatedBy { get; }
+        public DateTimeOffset CreatedOn { get; }
         public IReadOnlyList<Player> Players => _players.AsReadOnly();
         public GameParameters GameParameters => _gameParameters;
 

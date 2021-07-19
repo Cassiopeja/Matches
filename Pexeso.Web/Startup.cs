@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pexeso.Hubs;
 using Pexeso.Infrastructure;
+using Pexeso.Services;
 using VueCliMiddleware;
 
 namespace Pexeso
@@ -21,6 +22,7 @@ namespace Pexeso
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IDateTimeService, DateTimeService>();
             services.AddSingleton<IGameManager, GameManager>();
             services.AddControllers();
             services.AddSignalR(opt=>

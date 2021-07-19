@@ -34,7 +34,6 @@ namespace Pexeso.Hubs
             if (isFailure) throw new HubException("Can not create game");
 
             var createdGameDto = _mapper.Map<CreatedGameDto>(game);
-            createdGameDto.StartedBy = player.Name;
             await Groups.AddToGroupAsync(Context.ConnectionId, game.Id);
             await Clients.Others.GameCreated(createdGameDto);
             return createdGameDto;
