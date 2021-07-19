@@ -7,6 +7,8 @@ namespace Pexeso.Contracts.Dto
     {
         public string Id { get; set; }
         public string CardTemplateId { get; set; }
+        public int Rows { get; set; }
+        public int Columns { get; set; }
         public string CreatedBy { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public IEnumerable<PlayerDto> Players { get; set; }
