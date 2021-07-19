@@ -1,27 +1,52 @@
 <template>
   <div class="home">
-    <v-card>
-      
-    <v-card-title>Created games:</v-card-title>
-      <v-card-text>
-        <v-list>
-          <v-list-item-group v-model="selectedGame">
-            <v-list-item
-                v-for="item in games"
-                :key="item.id"
-            >
-              <v-list-item-content>
-                <v-list-item-title v-text="item.id"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn>Join</v-btn>
-        <v-btn @click="onCreateNewGameClicked">Create new</v-btn>
-      </v-card-actions>
-    </v-card>
+    <v-container>
+      <v-row dense>
+        <v-col cols="12" class="d-flex justify-center">
+          <v-btn @click="onCreateNewGameClicked" color="pink" dark>Create new game</v-btn
+          >
+        </v-col>
+        <v-col cols="12"
+          v-for="item in games"
+          :key="item.id">
+          <v-card>
+            <div class="d-flex flex-no-wrap justify-space-between">
+              <div>
+                <v-card-title>
+                 Game [{{item.rows}} x {{item.columns}}] has been created by {{item.createdBy}} 
+                </v-card-title>
+                <v-card-subtitle>
+                  Created on {{getFormmatedDateTime(item.createdOn)}}
+                </v-card-subtitle>
+                <v-card-text>
+                  <div>
+                    {{item.players.length}} players already  joined game
+                  </div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn
+                      class="ml-2 mt-5"
+                      outlined
+                      rounded
+                      small
+                      color="success"
+                  >
+                    JOIN
+                  </v-btn>
+                </v-card-actions>
+              </div>
+              <v-avatar
+                  class="ma-3"
+                  size="125"
+                  tile
+              >
+                <v-img :src="getBackCardImageUrl(item.cardTemplateId)"></v-img>
+              </v-avatar>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -29,19 +54,17 @@
 // @ is an alias to /src
 
 export default {
-  name: 'Home',
-  components: {
-  },
+  name: "Home",
+  components: {},
   data() {
     return {
-      games:[],
-      selectedGame:null,
+      games: [],
+      selectedGame: null,
       templates: []
-    }
+    };
   },
-  methods:{
-    async onCreateNewGameClicked(){
-      console.log("Create new game");
+  methods: {
+    async onCreateNewGameClicked() {
       const parameters = {
         rows: 4,
         columns: 2,
@@ -49,30 +72,50 @@ export default {
         templateId: this.templates[0].id
       };
       try {
-        await this.$gameHub.client.invoke("CreateGame", parameters);
+        const createdGame = await this.$gameHub.client.invoke(
+          "CreateGame",
+          parameters
+        );
+        this.games.push(createdGame);
+      } catch (e) {
+        this.$notify({ title: e });
       }
-      catch (e) {
-        console.error(e);
+    },
+    getBackCardImageUrl(templateId){
+      const template = this.templates.find(t=>t.id === templateId);
+      if (template === undefined)
+      {
+        return undefined;
       }
+      
+      return template.backCardImageUrl;
+    },
+    getFormmatedDateTime(dateTimeStr)
+    {
+      const date = new Date(Date.parse(dateTimeStr));
+      //TODO: add locale
+      return date.toLocaleString();
     }
   },
   mounted() {
-    this.$http.get("/createdgames")
-    .then(response => {
-      this.games = response.data
-    })
-    .catch(error=> console.error(error));
-    
-    this.$http.get("/cardTemplates")
-    .then(response => {
-      this.templates = response.data;
-    })
-        .catch(error=> console.error(error));
-    
-    this.$gameHub.client.on("GameCreated", (createdGame) =>{
+    this.$http
+      .get("/createdgames")
+      .then(response => {
+        this.games = response.data;
+      })
+      .catch(error => console.error(error));
+
+    this.$http
+      .get("/cardTemplates")
+      .then(response => {
+        this.templates = response.data;
+      })
+      .catch(error => console.error(error));
+
+    this.$gameHub.client.on("GameCreated", createdGame => {
       this.games.push(createdGame);
-      console.log(this.games);
+      this.$notify({ title: "Game created by " + createdGame.createdBy });
     });
   }
-}
+};
 </script>
