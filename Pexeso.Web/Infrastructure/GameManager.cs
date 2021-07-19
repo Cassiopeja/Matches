@@ -69,5 +69,21 @@ namespace Pexeso.Infrastructure
 
             return Result.Failure<CreatedGame>($"The game with id {gameId} has not been found");
         }
+
+        public Result AddCardTemplate(CardTemplate cardTemplate)
+        {
+            if (cardTemplate == null) throw new ArgumentNullException(nameof(cardTemplate));
+            if (_cardTemplates.ContainsKey(cardTemplate.Name))
+            {
+                return Result.Failure("Card template with this name is already added");
+            }
+
+            if (_cardTemplates.TryAdd(cardTemplate.Name, cardTemplate))
+            {
+                return Result.Success();
+            } 
+            
+            return Result.Failure("Something happened while adding card template");
+        }
     }
 }

@@ -13,5 +13,7 @@ namespace Pexeso.Infrastructure
         Result<Game> StartGame(string gameId, string playerId);
         Result FinishGame(string gameId);
         Result<CreatedGame> FindCreatedGame(string gameId);
+
+        Result AddCardTemplate(CardTemplate cardTemplate);
     }
 }
