@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="onCreateNewGameClicked" color="pink" dark>Create new game</v-btn
+          <v-btn @click="show.dialog=true" color="pink" dark>Create new game</v-btn
           >
         </v-col>
         <v-col cols="12"
@@ -46,6 +46,7 @@
           </v-card>
         </v-col>
       </v-row>
+      <create-game-dialog v-model="show.dialog"/>
     </v-container>
   </div>
 </template>
@@ -53,14 +54,16 @@
 <script>
 // @ is an alias to /src
 
+import CreateGameDialog from "@/components/CreateGameDialog";
 export default {
   name: "Home",
-  components: {},
+  components: {CreateGameDialog},
   data() {
     return {
       games: [],
       selectedGame: null,
-      templates: []
+      templates: [],
+      show: {dialog: false}
     };
   },
   methods: {
