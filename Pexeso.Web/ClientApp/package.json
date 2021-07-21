@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@microsoft/signalr": "^5.0.8",
+    "@vuex-orm/core": "^0.36.4",
+    "@vuex-orm/plugin-axios": "^0.9.4",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "prettier": "^1.19.1",
