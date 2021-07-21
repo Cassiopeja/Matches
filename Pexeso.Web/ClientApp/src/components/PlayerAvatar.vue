@@ -1,10 +1,12 @@
 <template>
-  <v-avatar
-      :color="player.color ? player.color.hex : '#eee'"
-      :size="size"
-  >
-    <span class="white--text text-h5">{{initials}}</span>
-  </v-avatar>
+  <v-tooltip bottom>
+    <template v-slot:activator="{ on, attrs }">
+      <v-avatar :color="player.color ? player.color.hex : '#eee'" :size="size" v-bind="attrs" v-on="on">
+        <span class="white--text text-h5">{{ initials }}</span>
+      </v-avatar>
+    </template>
+    <span>{{player.name}}</span>
+  </v-tooltip>
 </template>
 
 <script>
@@ -19,14 +21,16 @@ export default {
       value: 48
     }
   },
-  computed:{
+  computed: {
     initials() {
-      return this.player.name.split(' ').map(w => w[0]).join('').toUpperCase();
+      return this.player.name
+        .split(" ")
+        .map(w => w[0])
+        .join("")
+        .toUpperCase();
     }
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
