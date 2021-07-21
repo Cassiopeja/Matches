@@ -3,51 +3,47 @@
     <v-container>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="onCreateNewGameClicked" color="pink" dark>Create new game</v-btn
+          <v-btn @click="onCreateNewGameClicked" color="pink" dark
+            >Create new game</v-btn
           >
         </v-col>
-        <v-col cols="12"
-          v-for="item in games"
-          :key="item.id">
+        <v-col cols="12" v-for="item in games" :key="item.id">
           <v-card>
             <div class="d-flex flex-no-wrap justify-space-between">
               <div>
                 <v-card-title>
-                 Game [{{item.rows}} x {{item.columns}}] has been created by {{item.createdBy}} 
+                  Game [{{ item.rows }} x {{ item.columns }}] has been created
+                  by {{ item.createdBy }}
                 </v-card-title>
                 <v-card-subtitle>
                   Created on {{ getFormattedDateTime(item.createdOn) }}
                 </v-card-subtitle>
                 <v-card-text>
                   <div>
-                    {{item.players.length}} players already  joined game
+                    {{ item.players.length }} players already joined game
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-btn
-                      class="ml-2 mt-5"
-                      outlined
-                      rounded
-                      small
-                      color="success"
+                    class="ml-2 mt-5"
+                    outlined
+                    rounded
+                    small
+                    color="success"
                   >
                     JOIN
                   </v-btn>
                 </v-card-actions>
               </div>
-              <v-avatar
-                  class="ma-3"
-                  size="125"
-                  tile
-              >
+              <v-avatar class="ma-3" size="125" tile>
                 <v-img :src="getBackCardImageUrl(item.cardTemplateId)"></v-img>
               </v-avatar>
             </div>
           </v-card>
         </v-col>
       </v-row>
-      <create-game-dialog v-model="show.gameDialog"/>
-      <current-player-dialog v-model="show.playerDialog"/>
+      <create-game-dialog v-model="show.gameDialog" :templates="templates" />
+      <current-player-dialog v-model="show.playerDialog" />
     </v-container>
   </div>
 </template>
@@ -56,73 +52,53 @@
 // @ is an alias to /src
 
 import CreateGameDialog from "@/components/CreateGameDialog";
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
 import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
 export default {
   name: "Home",
-  components: {CurrentPlayerDialog, CreateGameDialog},
+  components: { CurrentPlayerDialog, CreateGameDialog },
   data() {
     return {
       games: [],
       selectedGame: null,
       templates: [],
-      show:{
+      show: {
         gameDialog: false,
         playerDialog: false
       },
       showGameDialog: {
-        dialog: false,
+        dialog: false
       },
       showPlayerDialog: {
-        dialog: false,
+        dialog: false
       }
     };
   },
   methods: {
     async onCreateNewGameClicked() {
-      console.log(this.currentPlayer);
-      if (this.currentPlayer === null)
-      {
-        this.$notify("No player");
+      if (this.currentPlayer === null) {
+        this.$notify("There is no player selected");
         this.show.playerDialog = true;
-      }
-      else {
+      } else {
         this.show.gameDialog = true;
       }
-      // const parameters = {
-      //   rows: 4,
-      //   columns: 2,
-      //   playerName: "user",
-      //   templateId: this.templates[0].id
-      // };
-      // try {
-      //   const createdGame = await this.$gameHub.client.invoke(
-      //     "CreateGame",
-      //     parameters
-      //   );
-      //   this.games.push(createdGame);
-      // } catch (e) {
-      //   this.$notify({ title: e });
-      // }
     },
-    getBackCardImageUrl(templateId){
-      const template = this.templates.find(t=>t.id === templateId);
-      if (template === undefined)
-      {
+    getBackCardImageUrl(templateId) {
+      const template = this.templates.find(t => t.id === templateId);
+      if (template === undefined) {
         return undefined;
       }
-      
+
       return template.backCardImageUrl;
     },
-    getFormattedDateTime(dateTimeStr)
-    {
+    getFormattedDateTime(dateTimeStr) {
       const date = new Date(Date.parse(dateTimeStr));
       //TODO: add locale
       return date.toLocaleString();
     }
   },
   computed: {
-    ...mapGetters(['currentPlayer'])
+    ...mapGetters(["currentPlayer"])
   },
   mounted() {
     this.$http
