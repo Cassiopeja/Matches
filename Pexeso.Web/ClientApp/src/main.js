@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import App from './App.vue'
-import vuetify from './plugins/vuetify'
-import router from './router'
-import Axios from 'axios';
+import Vue from "vue";
+import App from "./App.vue";
+import vuetify from "./plugins/vuetify";
+import router from "./router";
+import Axios from "axios";
 import gameHubPlugin from "@/plugins/gameHubPlugin";
 import Notification from "vue-notification";
-import store from './store'
+import store from "./store";
 
 Vue.use(gameHubPlugin);
 Vue.use(Notification);
@@ -24,4 +24,4 @@ new Vue({
       return config;
     });
   }
-}).$mount('#app')
+}).$mount("#app");

@@ -100,8 +100,7 @@ export default {
             parameters
           );
           console.log(createdGame);
-          //TODO: redirect to started game view
-          // this.show = false;
+          this.$router.push({name:'CreatedGameView', params:{id: createdGame.id}});
         } catch (e) {
           this.$notify({ title: e });
         }
