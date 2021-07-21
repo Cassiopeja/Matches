@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="show.dialog=true" color="pink" dark>Create new game</v-btn
+          <v-btn @click="onCreateNewGameClicked" color="pink" dark>Create new game</v-btn
           >
         </v-col>
         <v-col cols="12"
@@ -16,7 +16,7 @@
                  Game [{{item.rows}} x {{item.columns}}] has been created by {{item.createdBy}} 
                 </v-card-title>
                 <v-card-subtitle>
-                  Created on {{getFormmatedDateTime(item.createdOn)}}
+                  Created on {{ getFormattedDateTime(item.createdOn) }}
                 </v-card-subtitle>
                 <v-card-text>
                   <div>
@@ -46,7 +46,8 @@
           </v-card>
         </v-col>
       </v-row>
-      <create-game-dialog v-model="show.dialog"/>
+      <create-game-dialog v-model="show.gameDialog"/>
+      <current-player-dialog v-model="show.playerDialog"/>
     </v-container>
   </div>
 </template>
@@ -55,34 +56,54 @@
 // @ is an alias to /src
 
 import CreateGameDialog from "@/components/CreateGameDialog";
+import {mapGetters} from "vuex";
+import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
 export default {
   name: "Home",
-  components: {CreateGameDialog},
+  components: {CurrentPlayerDialog, CreateGameDialog},
   data() {
     return {
       games: [],
       selectedGame: null,
       templates: [],
-      show: {dialog: false}
+      show:{
+        gameDialog: false,
+        playerDialog: false
+      },
+      showGameDialog: {
+        dialog: false,
+      },
+      showPlayerDialog: {
+        dialog: false,
+      }
     };
   },
   methods: {
     async onCreateNewGameClicked() {
-      const parameters = {
-        rows: 4,
-        columns: 2,
-        playerName: "user",
-        templateId: this.templates[0].id
-      };
-      try {
-        const createdGame = await this.$gameHub.client.invoke(
-          "CreateGame",
-          parameters
-        );
-        this.games.push(createdGame);
-      } catch (e) {
-        this.$notify({ title: e });
+      console.log(this.currentPlayer);
+      if (this.currentPlayer === null)
+      {
+        this.$notify("No player");
+        this.show.playerDialog = true;
       }
+      else {
+        this.show.gameDialog = true;
+      }
+      // const parameters = {
+      //   rows: 4,
+      //   columns: 2,
+      //   playerName: "user",
+      //   templateId: this.templates[0].id
+      // };
+      // try {
+      //   const createdGame = await this.$gameHub.client.invoke(
+      //     "CreateGame",
+      //     parameters
+      //   );
+      //   this.games.push(createdGame);
+      // } catch (e) {
+      //   this.$notify({ title: e });
+      // }
     },
     getBackCardImageUrl(templateId){
       const template = this.templates.find(t=>t.id === templateId);
@@ -93,12 +114,15 @@ export default {
       
       return template.backCardImageUrl;
     },
-    getFormmatedDateTime(dateTimeStr)
+    getFormattedDateTime(dateTimeStr)
     {
       const date = new Date(Date.parse(dateTimeStr));
       //TODO: add locale
       return date.toLocaleString();
     }
+  },
+  computed: {
+    ...mapGetters(['currentPlayer'])
   },
   mounted() {
     this.$http
