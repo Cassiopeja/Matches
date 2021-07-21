@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pexeso.Contracts.Dto;
 using Pexeso.Infrastructure;
@@ -21,9 +22,24 @@ namespace Pexeso.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<CardTemplateDto>> GetAll()
         {
             return Ok(_gameManager.CardTemplates.Select(template => _mapper.Map<CardTemplateDto>(template)).ToList());
+        }
+
+        [HttpGet("{templateId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<CardTemplateDto> GetById(string templateId)
+        {
+            var template = _gameManager.CreatedGames.FirstOrDefault(t => t.Id == templateId);
+            if (template == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(template);
         }
     }
 }
