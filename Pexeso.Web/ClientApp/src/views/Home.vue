@@ -42,7 +42,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <create-game-dialog v-model="show.gameDialog" :templates="templates" />
+      <create-game-dialog v-model="show.gameDialog" />
       <current-player-dialog v-model="show.playerDialog" />
     </v-container>
   </div>
@@ -54,6 +54,8 @@
 import CreateGameDialog from "@/components/CreateGameDialog";
 import { mapGetters } from "vuex";
 import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
+import CardTemplate from "@/models/CardTemplate";
+
 export default {
   name: "Home",
   components: { CurrentPlayerDialog, CreateGameDialog },
@@ -61,7 +63,6 @@ export default {
     return {
       games: [],
       selectedGame: null,
-      templates: [],
       show: {
         gameDialog: false,
         playerDialog: false
@@ -84,12 +85,8 @@ export default {
       }
     },
     getBackCardImageUrl(templateId) {
-      const template = this.templates.find(t => t.id === templateId);
-      if (template === undefined) {
-        return undefined;
-      }
-
-      return template.backCardImageUrl;
+      const template = CardTemplate.find(templateId);
+      return template?.backCardImageUrl;
     },
     getFormattedDateTime(dateTimeStr) {
       const date = new Date(Date.parse(dateTimeStr));
@@ -98,9 +95,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["currentPlayer"])
+    ...mapGetters(["currentPlayer"]),
   },
-  mounted() {
+  async mounted() {
+    await CardTemplate.reload();
     this.$http
       .get("/createdgames")
       .then(response => {
@@ -108,16 +106,9 @@ export default {
       })
       .catch(error => console.error(error));
 
-    this.$http
-      .get("/cardTemplates")
-      .then(response => {
-        this.templates = response.data;
-      })
-      .catch(error => console.error(error));
-
     this.$gameHub.client.on("GameCreated", createdGame => {
       this.games.push(createdGame);
-      this.$notify({ title: "Game created by " + createdGame.createdBy });
+      this.$notify({title: "Game created by " + createdGame.createdBy});
     });
   }
 };

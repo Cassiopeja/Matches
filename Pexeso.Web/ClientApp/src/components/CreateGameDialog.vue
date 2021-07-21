@@ -61,11 +61,11 @@
 
 <script>
 import { mapGetters } from "vuex";
+import CardTemplate from "@/models/CardTemplate";
 
 export default {
   name: "CreateGameDialog",
   props: {
-    templates: [],
     value: {
       default: false
     }
@@ -99,8 +99,7 @@ export default {
             "CreateGame",
             parameters
           );
-          console.log(createdGame);
-          this.$router.push({name:'CreatedGameView', params:{id: createdGame.id}});
+          this.$router.push({name:'CreatedGameView', params:{id: createdGame.id, createdGame: createdGame}});
         } catch (e) {
           this.$notify({ title: e });
         }
@@ -122,7 +121,14 @@ export default {
     },
     sizeRules() {
       return [v => v !== null || "Game size field is mandatory"];
+    },
+    templates()
+    {
+      return CardTemplate.all();
     }
+  },
+  async beforeMount() {
+    await CardTemplate.reload();
   }
 };
 </script>
