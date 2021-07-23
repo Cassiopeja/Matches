@@ -33,13 +33,15 @@ namespace Pexeso.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<CardTemplateDto> GetById(string templateId)
         {
-            var template = _gameManager.CreatedGames.FirstOrDefault(t => t.Id == templateId);
+            var template = _gameManager.CardTemplates.FirstOrDefault(t => t.Id == templateId);
             if (template == null)
             {
                 return NotFound();
             }
 
-            return Ok(template);
+            var response = _mapper.Map<CardTemplateDto>(template);
+
+            return Ok(response);
         }
     }
 }
