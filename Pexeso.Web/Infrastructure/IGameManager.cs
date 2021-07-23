@@ -10,7 +10,7 @@ namespace Pexeso.Infrastructure
         IReadOnlyList<Game> StartedGames { get; }
         IReadOnlyList<CardTemplate> CardTemplates { get; }
         Result<CreatedGame> CreateNewGame(GameParameters gameParameters, Player player);
-        Result<Game> StartGame(string gameId, string playerId);
+        Result<Game> StartGame(string gameId, string playerConnectionId);
         Result FinishGame(string gameId);
         Result<CreatedGame> FindCreatedGame(string gameId);
 

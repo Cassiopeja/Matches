@@ -30,7 +30,7 @@ namespace Pexeso.Core
         {
             lock (_locker)
             {
-                if (_players.Any(pl => pl.ConnectionId == player.ConnectionId))
+                if (_players.Any(pl => pl.Id == player.Id))
                     return Result.Failure("The player already connected to the game");
 
                 _players.Add(player);
@@ -39,20 +39,19 @@ namespace Pexeso.Core
             return Result.Success();
         }
 
-        public Result Leave(string playerId)
+        public Result<Player> Leave(string connectionId)
         {
             lock (_locker)
             {
-                var player = _players.FirstOrDefault(pl => pl.ConnectionId == playerId);
+                var player = _players.FirstOrDefault(pl => pl.ConnectionId == connectionId);
                 if (player == null)
                 {
-                    return Result.Failure("Player does not in the game"); 
+                    return Result.Failure<Player>("Player does not in the game"); 
                 }
                 
                 _players.Remove(player);
+                return Result.Success(player);
             }
-
-            return Result.Success();
         }
 
         public Game Start()

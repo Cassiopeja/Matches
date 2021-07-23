@@ -37,12 +37,12 @@ namespace Pexeso.Infrastructure
             return Result.Success(game);
         }
 
-        public Result<Game> StartGame(string gameId, string playerId)
+        public Result<Game> StartGame(string gameId, string playerConnectionId)
         {
             var result = FindCreatedGame(gameId);
             if (result.IsFailure) return Result.Failure<Game>(result.Error);
 
-            var player = result.Value.Players.FirstOrDefault(pl => pl.ConnectionId == playerId);
+            var player = result.Value.Players.FirstOrDefault(pl => pl.ConnectionId == playerConnectionId);
             if (player == null) return Result.Failure<Game>("Player does not have permissions to start game");
 
             if (_createdGames.TryRemove(gameId, out var createdGame))

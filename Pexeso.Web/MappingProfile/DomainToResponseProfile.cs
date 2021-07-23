@@ -9,8 +9,7 @@ namespace Pexeso.MappingProfile
     {
         public DomainToResponseProfile()
         {
-            CreateMap<Player, PlayerDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ConnectionId));
+            CreateMap<Player, PlayerDto>();
             CreateMap<IReadOnlyList<Player>, List<PlayerDto>>();
             CreateMap<CreatedGame, CreatedGameDto>()
                 .ForMember(dest => dest.CardTemplateId, opt => opt.MapFrom(src => src.GameParameters.CardTemplate.Id))

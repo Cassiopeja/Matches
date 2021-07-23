@@ -117,7 +117,7 @@ namespace Pexeso.Core
 
         private bool IsPlayerTurn(string playerId)
         {
-            return _currentPlayer.ConnectionId == playerId;
+            return _currentPlayer.Id == playerId;
         }
 
         private bool IsThisFirstMove()

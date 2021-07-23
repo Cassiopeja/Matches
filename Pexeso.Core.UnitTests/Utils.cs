@@ -20,7 +20,7 @@ namespace Pexeso.Core.UnitTests
             for (int i = 0; i < num; i++)
             {
                 var name = $"player{i}";
-                players.Add(new Player(name, name));
+                players.Add(new Player(i.ToString(), name, name, "red"));
             }
 
             return players;
