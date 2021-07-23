@@ -55,13 +55,13 @@ import CreateGameDialog from "@/components/CreateGameDialog";
 import { mapGetters } from "vuex";
 import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
 import CardTemplate from "@/models/CardTemplate";
+import CreatedGame from "@/models/CreatedGame";
 
 export default {
   name: "Home",
   components: { CurrentPlayerDialog, CreateGameDialog },
   data() {
     return {
-      games: [],
       selectedGame: null,
       show: {
         gameDialog: false,
@@ -96,18 +96,16 @@ export default {
   },
   computed: {
     ...mapGetters(["currentPlayer"]),
+    games(){
+      return CreatedGame.all();
+    }
   },
   async mounted() {
     await CardTemplate.reload();
-    this.$http
-      .get("/createdgames")
-      .then(response => {
-        this.games = response.data;
-      })
-      .catch(error => console.error(error));
+    await CreatedGame.reload(); 
 
     this.$gameHub.client.on("GameCreated", createdGame => {
-      this.games.push(createdGame);
+      CreatedGame.insert(createdGame);
       this.$notify({title: "Game created by " + createdGame.createdBy});
     });
   }

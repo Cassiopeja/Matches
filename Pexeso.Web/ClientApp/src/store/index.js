@@ -6,10 +6,12 @@ import VuexORMAxios from "@vuex-orm/plugin-axios";
 import settings from "@/store/settings";
 import createPersistedState from "vuex-persistedstate";
 import CardTemplate from "@/models/CardTemplate";
+import CreatedGame from "@/models/CreatedGame";
 
 VuexORM.use(VuexORMAxios, { axios });
 const database = new VuexORM.Database();
 database.register(CardTemplate);
+database.register(CreatedGame);
 
 Vue.use(Vuex);
 

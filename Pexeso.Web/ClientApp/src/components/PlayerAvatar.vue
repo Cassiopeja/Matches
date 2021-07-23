@@ -1,7 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on, attrs }">
-      <v-avatar :color="player.color ? player.color.hex : '#eee'" :size="size" v-bind="attrs" v-on="on">
+      <v-avatar :color="player.color ? player.color : '#eee'" :size="size" v-bind="attrs" v-on="on">
         <span class="white--text text-h5">{{ initials }}</span>
       </v-avatar>
     </template>

@@ -62,6 +62,7 @@
 <script>
 import { mapGetters } from "vuex";
 import CardTemplate from "@/models/CardTemplate";
+import CreatedGame from "@/models/CreatedGame";
 
 export default {
   name: "CreateGameDialog",
@@ -91,15 +92,19 @@ export default {
         const parameters = {
           rows: this.selectedSize.rows,
           columns: this.selectedSize.columns,
-          playerName: this.currentPlayer.name,
           templateId: this.selectedTemplateId
         };
         try {
           const createdGame = await this.$gameHub.client.invoke(
             "CreateGame",
-            parameters
+            parameters,
+            this.currentPlayer
           );
-          this.$router.push({name:'CreatedGameView', params:{id: createdGame.id, createdGame: createdGame}});
+          await CreatedGame.insert({ data: createdGame });
+          await this.$router.push({
+            name: "CreatedGameView",
+            params: { id: createdGame.id }
+          });
         } catch (e) {
           this.$notify({ title: e });
         }
@@ -122,8 +127,7 @@ export default {
     sizeRules() {
       return [v => v !== null || "Game size field is mandatory"];
     },
-    templates()
-    {
+    templates() {
       return CardTemplate.all();
     }
   },
