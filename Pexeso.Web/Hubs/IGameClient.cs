@@ -8,10 +8,10 @@ namespace Pexeso.Hubs
         Task GameCreated(CreatedGameDto createdGame);
 
         Task PlayerJoinedCreatedGame(string gameId, PlayerDto playerDto);
-        Task PlayerJoinedCreatedGame(PlayerDto playerDto);
-        Task PlayerLeftCreatedGame(string gameId, string playerId);
-        Task PlayerLeftCreatedGame(string playerId);
-        Task GameStarted(GameDto game);
         Task GameStarted(string gameId);
+        Task PlayerLeftCreatedGame(string gameId, string playerId);
+        Task GroupPlayerJoinedCreatedGame(PlayerDto playerDto);
+        Task GroupPlayerLeftCreatedGame(string playerId);
+        Task GroupGameStarted(GameDto game);
     }
 }

@@ -48,7 +48,7 @@ namespace Pexeso.Hubs
 
             await Groups.AddToGroupAsync(player.ConnectionId, gameId);
             var playerDto = _mapper.Map<PlayerDto>(player);
-            await Clients.OthersInGroup(gameId).PlayerJoinedCreatedGame(playerDto);
+            await Clients.OthersInGroup(gameId).GroupPlayerJoinedCreatedGame(playerDto);
             await Clients.Others.PlayerJoinedCreatedGame(gameId, playerDto);
         }
 
@@ -66,7 +66,7 @@ namespace Pexeso.Hubs
             var result = game.Leave(Context.ConnectionId);
             if (result.IsFailure) throw new HubException(result.Error);
 
-            await Clients.OthersInGroup(gameId).PlayerLeftCreatedGame(result.Value.Id);
+            await Clients.OthersInGroup(gameId).GroupPlayerLeftCreatedGame(result.Value.Id);
             await Clients.Others.PlayerLeftCreatedGame(gameId, result.Value.Id);
         }
 
@@ -76,7 +76,7 @@ namespace Pexeso.Hubs
             if (result.IsFailure) throw new HubException(result.Error);
 
             var gameDto = _mapper.Map<GameDto>(result.Value);
-            await Clients.Group(gameId).GameStarted(gameDto);
+            await Clients.Group(gameId).GroupGameStarted(gameDto);
             await Clients.Others.GameStarted(gameId);
         }
     }
