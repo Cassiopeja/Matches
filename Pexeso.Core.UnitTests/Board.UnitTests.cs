@@ -14,8 +14,8 @@ namespace Pexeso.Core.UnitTests
             
             var board = new Board(parameters);
 
-            board.Columns.Should().Be(columns);
-            board.Rows.Should().Be(rows);
+            board.BoardState.Columns.Should().Be(columns);
+            board.BoardState.Rows.Should().Be(rows);
             board.IsBoardEmpty().Should().BeFalse();
         }
     }

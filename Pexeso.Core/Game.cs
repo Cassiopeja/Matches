@@ -31,6 +31,9 @@ namespace Pexeso.Core
 
         public string Id { get; }
         public GameState GameState { get; private set; }
+        public IReadOnlyList<Player> Players => _playersQueue.Players;
+        public Player CurrentPlayer => _playersQueue.CurrentPlayer;
+        public BoardState BoardState => _board.BoardState;
 
         public Result<Card> OpenCard(string playerId, int row, int column)
         {
