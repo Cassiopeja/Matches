@@ -3,14 +3,12 @@ namespace Pexeso.Core
     public class Move
     {
         public Card Card { get; }
-        public int Row { get; }
-        public int Column { get; }
+        public int Index { get; }
 
-        public Move(Card card, int row, int column)
+        public Move(Card card, int index)
         {
             Card = card;
-            Row = row;
-            Column = column;
+            Index = index;
         }
     }
 }

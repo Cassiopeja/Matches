@@ -33,7 +33,7 @@ namespace Pexeso.Core.UnitTests
 
             var game = new Game(id, players, board);
 
-            var result = game.OpenCard(player1.Id, 0, 0);
+            var result = game.OpenCard(player1.Id, 0);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.DoneFirstMove);
             
@@ -41,7 +41,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
 
-            result = game.OpenCard(player1.Id, 1, 0);
+            result = game.OpenCard(player1.Id, 3);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.OpenedTwoEqualCards);
             game.IsGameFinished().Should().BeFalse();
@@ -50,7 +50,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
             
-            result = game.OpenCard(player1.Id, 0, 1);
+            result = game.OpenCard(player1.Id, 1);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.DoneFirstMove);
             game.IsGameFinished().Should().BeFalse();
@@ -59,7 +59,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
             
-            result = game.OpenCard(player1.Id, 0, 2);
+            result = game.OpenCard(player1.Id, 5);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.OpenedTwoNotEqualsCards);
             game.IsGameFinished().Should().BeFalse();
@@ -68,7 +68,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player2.Id);
             
-            result = game.OpenCard(player2.Id, 0, 1);
+            result = game.OpenCard(player2.Id, 1);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.DoneFirstMove);
             game.IsGameFinished().Should().BeFalse();
@@ -77,7 +77,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player2.Id);
             
-            result = game.OpenCard(player2.Id, 1, 1);
+            result = game.OpenCard(player2.Id, 4);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.OpenedTwoEqualCards);
             game.IsGameFinished().Should().BeFalse();
@@ -86,7 +86,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player2.Id);
             
-            result = game.OpenCard(player2.Id, 0, 2);
+            result = game.OpenCard(player2.Id, 2);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.DoneFirstMove);
             game.IsGameFinished().Should().BeFalse();
@@ -95,7 +95,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player2.Id);
             
-            result = game.OpenCard(player2.Id, 1, 2);
+            result = game.OpenCard(player2.Id, 5);
             result.Should().BeSuccess();
             game.GameState.Should().Be(GameState.OpenedTwoEqualCards);
             game.IsGameFinished().Should().BeTrue();
@@ -115,7 +115,7 @@ namespace Pexeso.Core.UnitTests
             nextPlayer.Should().BeSuccess();
             nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
 
-            var result = game.OpenCard(player2.Id, 0, 0);
+            var result = game.OpenCard(player2.Id, 0);
             result.Should().BeFailure();
             game.GameState.Should().Be(GameState.WaitingForFirstMove);
         }

@@ -35,29 +35,29 @@ namespace Pexeso.Core
         public Player CurrentPlayer => _playersQueue.CurrentPlayer;
         public BoardState BoardState => _board.BoardState;
 
-        public Result<Card> OpenCard(string playerId, int row, int column)
+        public Result<Card> OpenCard(string playerId, int index)
         {
             lock (_locker)
             {
                 if (!_playersQueue.IsPlayerTurn(playerId)) return Result.Failure<Card>("This is not your turn");
-                var card = _board.OpenCard(row, column);
+                var card = _board.OpenCard(index);
                 if (card == Card.NoCard) return Result.Failure<Card>("You selected empty space");
                 if (IsThisFirstMove())
                 {
-                    _firstMove = new Move(card, row, column);
+                    _firstMove = new Move(card, index);
                     GameState = GameState.DoneFirstMove;
                 }
                 else if (IsThisSecondMove())
                 {
-                    _secondMove = new Move(card, row, column);
+                    _secondMove = new Move(card, index);
                     GameState = _secondMove.Card.Equals(_firstMove.Card)
                         ? GameState.OpenedTwoEqualCards
                         : GameState.OpenedTwoNotEqualsCards;
                     if (GameState == GameState.OpenedTwoEqualCards)
                     {
                         _playersQueue.IncrementCurrentPlayerScore();
-                        RemoveCard(_firstMove.Row, _firstMove.Column);
-                        RemoveCard(_secondMove.Row, _secondMove.Column);
+                        RemoveCard(_firstMove.Index);
+                        RemoveCard(_secondMove.Index);
                     }
                 }
 
@@ -114,9 +114,9 @@ namespace Pexeso.Core
             return _firstMove != null && _secondMove == null;
         }
 
-        private void RemoveCard(int row, int column)
+        private void RemoveCard(int index)
         {
-            _board.RemoveCard(row, column);
+            _board.RemoveCard(index);
         }
 
         private static List<Player> ShuffledPlayers(IReadOnlyList<Player> players)

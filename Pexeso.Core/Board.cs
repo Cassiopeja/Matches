@@ -71,22 +71,20 @@ namespace Pexeso.Core
             return pile;
         }
 
-        public void RemoveCard(int row, int column)
+        private void GuardIndex(int index)
         {
-            if (row > _rows - 1 || row < 0) throw new ArgumentOutOfRangeException(nameof(row));
-
-            if (column > _columns - 1 || column < 0) throw new ArgumentOutOfRangeException(nameof(column));
-
-            _board[row * _columns + column] = null;
+            if (index > _board.Length - 1 || index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+        }
+        public void RemoveCard(int index)
+        {
+            GuardIndex(index);
+            _board[index] = null;
         }
 
-        public Card OpenCard(int row, int column)
+        public Card OpenCard(int index)
         {
-            if (row > _rows - 1 || row < 0) throw new ArgumentOutOfRangeException(nameof(row));
-
-            if (column > _columns - 1 || column < 0) throw new ArgumentOutOfRangeException(nameof(column));
-
-            return _board[row * _columns + column] ?? Card.NoCard;
+            GuardIndex(index);
+            return _board[index] ?? Card.NoCard;
         }
 
         public bool IsBoardEmpty()
