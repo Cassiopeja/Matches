@@ -35,7 +35,8 @@
           </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn>Start game</v-btn>
+        <v-btn @click="onStartClicked">Start game</v-btn>
+        <v-btn @click="onLeaveClicked">Leave game</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -60,6 +61,18 @@ export default {
       loading: true
     };
   },
+  methods: {
+    async onStartClicked(){
+      console.log("Starting game")
+    },
+    async onLeaveClicked(){
+      await this.$router.push({"name":"Home"});
+    },
+    async leaveGame()
+    {
+      await this.$gameHub.client.send("LeaveCreatedGame", this.id);
+    }
+  },
   computed: {
     template() {
       return CardTemplate.find(this.createdGame.cardTemplateId);
@@ -81,13 +94,21 @@ export default {
       return players;
     }
   },
+  async beforeRouteLeave(to, from, next)
+  {
+    if (to.name === "Home")
+    {
+      await this.leaveGame();
+    }
+    next();
+  },
   async beforeMount() {
     this.loading = true;
-    await CreatedGame.require(this.id);
+    await CreatedGame.refresh(this.id);
     this.createdGame = CreatedGame.find(this.id);
     await CardTemplate.require(this.createdGame.cardTemplateId);
     this.loading = false;
-  }
+  },
 };
 </script>
 

@@ -6,7 +6,9 @@
     >
     <v-app-bar-title class="text-uppercase">
       <div>
-        <span>PEXESO</span>
+        <router-link to="/" class="text-decoration-none">
+          <span>PEXESO</span>
+        </router-link>
       </div>
     </v-app-bar-title>
     <v-spacer/>
