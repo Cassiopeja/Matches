@@ -30,6 +30,7 @@
                     rounded
                     small
                     color="success"
+                    @click="onJoinGameClicked(item)"
                   >
                     JOIN
                   </v-btn>
@@ -78,10 +79,35 @@ export default {
   methods: {
     async onCreateNewGameClicked() {
       if (this.currentPlayer === null) {
-        this.$notify("There is no player selected");
-        this.show.playerDialog = true;
-      } else {
-        this.show.gameDialog = true;
+        this.showCreatePlayerDialog();
+        return;
+      }
+
+      this.show.gameDialog = true;
+    },
+    showCreatePlayerDialog() {
+      this.$notify("There is no player selected");
+      this.show.playerDialog = true;
+    },
+    async onJoinGameClicked(game) {
+      if (this.currentPlayer === null) {
+        this.showCreatePlayerDialog();
+        return;
+      }
+
+      try {
+        await this.$gameHub.client.invoke(
+            "JoinCreatedGame",
+            game.id,
+            this.currentPlayer
+        );
+        await this.$router.push({
+          name: "CreatedGameView",
+          params: { id: game.id }
+        });
+      } catch (e) {
+        this.$notify({ title: e });
+        console.error(e);
       }
     },
     getBackCardImageUrl(templateId) {
@@ -96,18 +122,30 @@ export default {
   },
   computed: {
     ...mapGetters(["currentPlayer"]),
-    games(){
+    games() {
       return CreatedGame.all();
     }
   },
   async mounted() {
     await CardTemplate.reload();
-    await CreatedGame.reload(); 
+    await CreatedGame.reload();
 
     this.$gameHub.client.on("GameCreated", createdGame => {
-      CreatedGame.insert(createdGame);
-      this.$notify({title: "Game created by " + createdGame.createdBy});
+      CreatedGame.insert({data:createdGame});
+      this.$notify({ title: `Game created by ${createdGame.createdBy}` });
     });
+    
+
+    this.$gameHub.client.on("PlayerJoinedCreatedGame", (gameId, player) => {
+      const game = CreatedGame.find(gameId);
+      if (game === null) return;
+      game.players.push(player);
+      this.$notify({ title: player.name + " joined the game" });
+    });
+  },
+  beforeDestroy() {
+    this.$gameHub.client.off("GameCreated");
+    this.$gameHub.client.off("PlayerJoinedCreatedGame");
   }
 };
 </script>
