@@ -9,8 +9,7 @@ namespace Pexeso.Core
     {
         private readonly Board _board;
         private readonly object _locker = new();
-        private readonly Queue<Player> _players;
-        private Player _currentPlayer;
+        private readonly PlayersQueue _playersQueue;
         private Move _firstMove;
         private Move _secondMove;
 
@@ -22,16 +21,12 @@ namespace Pexeso.Core
         public Game(string id, List<Player> players, Board board)
         {
             if (players == null) throw new ArgumentNullException(nameof(players));
-            if (board == null) throw new ArgumentNullException(nameof(board));
             if (players.Count == 0)
                 throw new ArgumentException("Value cannot be an empty collection.", nameof(players));
-
             Id = id ?? throw new ArgumentNullException(nameof(id));
-            _players = new Queue<Player>();
-            players.ForEach(item => _players.Enqueue(item));
-            _board = board;
+            _board = board ?? throw new ArgumentNullException(nameof(board));
+            _playersQueue = new PlayersQueue(players);
             GameState = GameState.WaitingForFirstMove;
-            _currentPlayer = _players.Dequeue();
         }
 
         public string Id { get; }
@@ -41,7 +36,7 @@ namespace Pexeso.Core
         {
             lock (_locker)
             {
-                if (!IsPlayerTurn(playerId)) return Result.Failure<Card>("This is not your turn");
+                if (!_playersQueue.IsPlayerTurn(playerId)) return Result.Failure<Card>("This is not your turn");
                 var card = _board.OpenCard(row, column);
                 if (card == Card.NoCard) return Result.Failure<Card>("You selected empty space");
                 if (IsThisFirstMove())
@@ -57,7 +52,7 @@ namespace Pexeso.Core
                         : GameState.OpenedTwoNotEqualsCards;
                     if (GameState == GameState.OpenedTwoEqualCards)
                     {
-                        _currentPlayer.Score++;
+                        _playersQueue.IncrementCurrentPlayerScore();
                         RemoveCard(_firstMove.Row, _firstMove.Column);
                         RemoveCard(_secondMove.Row, _secondMove.Column);
                     }
@@ -91,33 +86,19 @@ namespace Pexeso.Core
             {
                 if (GameState == GameState.Finished) return Result.Failure<Player>("Game is over");
 
-                if (IsThisFirstMove() || IsThisSecondMove()) return _currentPlayer;
+                if (IsThisFirstMove() || IsThisSecondMove()) return _playersQueue.CurrentPlayer;
 
                 _firstMove = null;
                 _secondMove = null;
 
                 if (GameState != GameState.OpenedTwoEqualCards)
                 {
-                    _players.Enqueue(_currentPlayer);
-                    _currentPlayer = _players.Dequeue();
+                    _playersQueue.NextPlayer();
                 }
 
                 GameState = GameState.WaitingForFirstMove;
-                return _currentPlayer;
+                return _playersQueue.CurrentPlayer;
             }
-        }
-
-        public IReadOnlyCollection<Player> GetCurrentPlayers()
-        {
-            var players = _players.ToList();
-            players.Add(_currentPlayer);
-
-            return players.AsReadOnly();
-        }
-
-        private bool IsPlayerTurn(string playerId)
-        {
-            return _currentPlayer.Id == playerId;
         }
 
         private bool IsThisFirstMove()
