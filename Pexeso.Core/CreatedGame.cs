@@ -46,7 +46,7 @@ namespace Pexeso.Core
                 var player = _players.FirstOrDefault(pl => pl.ConnectionId == connectionId);
                 if (player == null)
                 {
-                    return Result.Failure<Player>("Player does not in the game"); 
+                    return Result.Failure<Player>("Player is not in the game"); 
                 }
                 
                 _players.Remove(player);

@@ -65,9 +65,10 @@ namespace Pexeso.Hubs
             var game = FindCreatedGame(gameId);
             var result = game.Leave(Context.ConnectionId);
             if (result.IsFailure) throw new HubException(result.Error);
+            var playerDto = _mapper.Map<PlayerDto>(result.Value);
 
-            await Clients.OthersInGroup(gameId).GroupPlayerLeftCreatedGame(result.Value.Id);
-            await Clients.Others.PlayerLeftCreatedGame(gameId, result.Value.Id);
+            await Clients.OthersInGroup(gameId).GroupPlayerLeftCreatedGame(playerDto);
+            await Clients.Others.PlayerLeftCreatedGame(gameId, playerDto);
         }
 
         public async Task StartGame(string gameId)
