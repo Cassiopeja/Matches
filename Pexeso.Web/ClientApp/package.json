@@ -13,6 +13,7 @@
     "@vuex-orm/plugin-axios": "^0.9.4",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "date-fns": "^2.23.0",
     "prettier": "^1.19.1",
     "uuid": "^3.4.0",
     "vue": "^2.6.11",

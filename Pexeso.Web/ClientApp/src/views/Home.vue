@@ -7,40 +7,22 @@
             >Create new game</v-btn
           >
         </v-col>
-        <v-col cols="12" v-for="item in games" :key="item.id">
-          <v-card>
-            <div class="d-flex flex-no-wrap justify-space-between">
-              <div>
-                <v-card-title>
-                  Game [{{ item.rows }} x {{ item.columns }}] has been created
-                  by {{ item.createdBy }}
-                </v-card-title>
-                <v-card-subtitle>
-                  Created on {{ getFormattedDateTime(item.createdOn) }}
-                </v-card-subtitle>
-                <v-card-text>
-                  <div>
-                    {{ item.players.length }} players already joined game
-                  </div>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn
-                    class="ml-2 mt-5"
-                    outlined
-                    rounded
-                    small
-                    color="success"
-                    @click="onJoinGameClicked(item)"
-                  >
-                    JOIN
-                  </v-btn>
-                </v-card-actions>
-              </div>
-              <v-avatar class="ma-3" size="125" tile>
-                <v-img :src="getBackCardImageUrl(item.cardTemplateId)"></v-img>
-              </v-avatar>
-            </div>
-          </v-card>
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+          lg="3"
+          v-for="game in games"
+          :key="game.id"
+        >
+          <GameCard :created-game="game">
+            <template v-slot:actions>
+              <v-btn text @click="onJoinGameClicked(game)">
+                <v-icon left>mdi-login-variant</v-icon>
+                Join
+              </v-btn>
+            </template>
+          </GameCard>
         </v-col>
       </v-row>
       <create-game-dialog v-model="show.gameDialog" />
@@ -57,10 +39,11 @@ import { mapGetters } from "vuex";
 import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
 import CardTemplate from "@/models/CardTemplate";
 import CreatedGame from "@/models/CreatedGame";
+import GameCard from "@/components/GameCard";
 
 export default {
   name: "Home",
-  components: { CurrentPlayerDialog, CreateGameDialog },
+  components: { GameCard, CurrentPlayerDialog, CreateGameDialog },
   data() {
     return {
       selectedGame: null,
@@ -97,9 +80,9 @@ export default {
 
       try {
         await this.$gameHub.client.invoke(
-            "JoinCreatedGame",
-            game.id,
-            this.currentPlayer
+          "JoinCreatedGame",
+          game.id,
+          this.currentPlayer
         );
         await this.$router.push({
           name: "CreatedGameView",
@@ -109,15 +92,6 @@ export default {
         this.$notify({ title: e });
         console.error(e);
       }
-    },
-    getBackCardImageUrl(templateId) {
-      const template = CardTemplate.find(templateId);
-      return template?.backCardImageUrl;
-    },
-    getFormattedDateTime(dateTimeStr) {
-      const date = new Date(Date.parse(dateTimeStr));
-      //TODO: add locale
-      return date.toLocaleString();
     }
   },
   computed: {
@@ -126,26 +100,40 @@ export default {
       return CreatedGame.all();
     }
   },
-  async mounted() {
+  async beforeMount() {
     await CardTemplate.reload();
     await CreatedGame.reload();
 
     this.$gameHub.client.on("GameCreated", createdGame => {
-      CreatedGame.insert({data:createdGame});
+      CreatedGame.insert({ data: createdGame });
       this.$notify({ title: `Game created by ${createdGame.createdBy}` });
     });
-    
 
     this.$gameHub.client.on("PlayerJoinedCreatedGame", (gameId, player) => {
       const game = CreatedGame.find(gameId);
-      if (game === null) return;
-      game.players.push(player);
+      if (game === null) {
+        return;
+      }
+      const players = [...game.players];
+      players.push(player);
+      CreatedGame.update({ where: gameId, data: { players: players } });
       this.$notify({ title: player.name + " joined the game" });
+    });
+
+    this.$gameHub.client.on("PlayerLeftCreatedGame", (gameId, player) => {
+      const game = CreatedGame.find(gameId);
+      if (game === null) {
+        return;
+      }
+      const players = game.players.filter(pl => pl.id !== player.id);
+      CreatedGame.update({ where: gameId, data: { players: players } });
+      this.$notify({ title: player.name + " left the game" });
     });
   },
   beforeDestroy() {
     this.$gameHub.client.off("GameCreated");
     this.$gameHub.client.off("PlayerJoinedCreatedGame");
+    this.$gameHub.client.off("PlayerLeftCreatedGame");
   }
 };
 </script>

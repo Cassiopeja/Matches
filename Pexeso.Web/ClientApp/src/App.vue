@@ -18,5 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+a {
+  text-decoration: none;
+}
 </style>

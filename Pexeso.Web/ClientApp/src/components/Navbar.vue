@@ -4,12 +4,13 @@
       color="blue darken-4"
       dark
     >
-    <v-app-bar-title class="text-uppercase">
-      <div>
-        <router-link to="/" class="text-decoration-none">
-          <span>PEXESO</span>
-        </router-link>
-      </div>
+    <v-app-bar-title class="text-uppercase text--white">
+      <span
+          @click="$router.push('/').catch(() => {})"
+          style="cursor: pointer"
+      >
+          PEXESO
+      </span>
     </v-app-bar-title>
     <v-spacer/>
     <player-avatar v-if="currentPlayer" :player="currentPlayer"></player-avatar>
