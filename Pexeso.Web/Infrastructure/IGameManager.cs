@@ -13,6 +13,7 @@ namespace Pexeso.Infrastructure
         Result<Game> StartGame(string gameId, string playerConnectionId);
         Result FinishGame(string gameId);
         Result<CreatedGame> FindCreatedGame(string gameId);
+        Result<Game> FindStartedGame(string gameId);
 
         Result AddCardTemplate(CardTemplate cardTemplate);
         Result<bool> CloseCreatedGameIfNoPlayers(string gameId);

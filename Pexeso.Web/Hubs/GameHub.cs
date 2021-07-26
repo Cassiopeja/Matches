@@ -80,15 +80,12 @@ namespace Pexeso.Hubs
             }
         }
 
-        public async Task<GameDto> StartGame(string gameId)
+        public async Task StartGame(string gameId)
         {
             var result = _gameManager.StartGame(gameId, Context.ConnectionId);
             if (result.IsFailure) throw new HubException(result.Error);
-
-            var gameDto = _mapper.Map<GameDto>(result.Value);
-            await Clients.Group(gameId).GroupGameStarted(gameDto);
+            await Clients.Group(gameId).GroupGameStarted();
             await Clients.Others.GameStarted(gameId);
-            return gameDto;
         }
     }
 }

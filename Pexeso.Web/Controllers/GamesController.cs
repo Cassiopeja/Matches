@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -10,35 +9,30 @@ namespace Pexeso.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CreatedGamesController: ControllerBase
+    public class GamesController : ControllerBase
     {
         private readonly IGameManager _gameManager;
         private readonly IMapper _mapper;
 
-        public CreatedGamesController(IGameManager gameManager, IMapper mapper)
+        public GamesController(IGameManager gameManager, IMapper mapper)
         {
             _gameManager = gameManager;
             _mapper = mapper;
         }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<CreatedGameDto>> GetAll()
-        {
-            return Ok(_gameManager.CreatedGames.Select(game => _mapper.Map<CreatedGameDto>(game)).ToList());
-        }
         
-        [HttpGet("{createdGameId}")]
+        [HttpGet]
+        [HttpGet("{gameId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<CreatedGameDto> GetById(string createdGameId)
+        public ActionResult<GameDto> GetById(string gameId)
         {
-            var gameResult = _gameManager.FindCreatedGame(createdGameId);
+            var gameResult = _gameManager.FindStartedGame(gameId);
             if (gameResult.IsFailure)
             {
                 return NotFound();
             }
 
-            var response = _mapper.Map<CreatedGameDto>(gameResult.Value);
+            var response = _mapper.Map<GameDto>(gameResult.Value);
             return Ok(response);
         }
         

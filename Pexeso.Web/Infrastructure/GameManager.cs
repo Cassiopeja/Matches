@@ -70,6 +70,13 @@ namespace Pexeso.Infrastructure
             return Result.Failure<CreatedGame>($"The game with id {gameId} has not been found");
         }
 
+        public Result<Game> FindStartedGame(string gameId)
+        {
+            if (_startedGames.TryGetValue(gameId, out var game)) return Result.Success(game);
+
+            return Result.Failure<Game>($"The game with id {gameId} has not been found");
+        }
+
         public Result AddCardTemplate(CardTemplate cardTemplate)
         {
             if (cardTemplate == null) throw new ArgumentNullException(nameof(cardTemplate));
