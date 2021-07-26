@@ -71,7 +71,7 @@ namespace Pexeso.Hubs
             await Clients.Others.PlayerLeftCreatedGame(gameId, playerDto);
         }
 
-        public async Task StartGame(string gameId)
+        public async Task<GameDto> StartGame(string gameId)
         {
             var result = _gameManager.StartGame(gameId, Context.ConnectionId);
             if (result.IsFailure) throw new HubException(result.Error);
@@ -79,6 +79,7 @@ namespace Pexeso.Hubs
             var gameDto = _mapper.Map<GameDto>(result.Value);
             await Clients.Group(gameId).GroupGameStarted(gameDto);
             await Clients.Others.GameStarted(gameId);
+            return gameDto;
         }
     }
 }

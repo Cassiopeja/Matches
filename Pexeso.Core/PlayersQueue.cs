@@ -16,7 +16,7 @@ namespace Pexeso.Core
             CurrentPlayer = _playersQueue.Dequeue();
         }
 
-        public IReadOnlyList<Player> Players => _players.AsReadOnly();
+        public IReadOnlyList<Player> Players => _players;
         public Player CurrentPlayer { get; private set; }
 
         public void NextPlayer()

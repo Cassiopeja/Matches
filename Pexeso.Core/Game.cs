@@ -34,6 +34,8 @@ namespace Pexeso.Core
         public IReadOnlyList<Player> Players => _playersQueue.Players;
         public Player CurrentPlayer => _playersQueue.CurrentPlayer;
         public BoardState BoardState => _board.BoardState;
+        public Move FirstMove => _firstMove;
+        public Move SecondMove => _secondMove;
 
         public Result<Card> OpenCard(string playerId, int index)
         {
