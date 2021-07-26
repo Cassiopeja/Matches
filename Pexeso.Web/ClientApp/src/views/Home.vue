@@ -129,11 +129,21 @@ export default {
       CreatedGame.update({ where: gameId, data: { players: players } });
       this.$notify({ title: player.name + " left the game" });
     });
+    this.$gameHub.client.on("CreatedGameIsClosed", (gameId) => {
+      const game = CreatedGame.find(gameId);
+      if (game === null) {
+        return;
+      }
+      this.$notify({title:`Game created by ${game.createdBy} is closed`})
+      CreatedGame.delete(gameId);
+    });
   },
   beforeDestroy() {
     this.$gameHub.client.off("GameCreated");
     this.$gameHub.client.off("PlayerJoinedCreatedGame");
     this.$gameHub.client.off("PlayerLeftCreatedGame");
+    this.$gameHub.client.off("PlayerLeftCreatedGame");
+    this.$gameHub.client.off("CreatedGameIsClosed");
   }
 };
 </script>

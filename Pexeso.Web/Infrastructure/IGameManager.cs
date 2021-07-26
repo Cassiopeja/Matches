@@ -15,5 +15,6 @@ namespace Pexeso.Infrastructure
         Result<CreatedGame> FindCreatedGame(string gameId);
 
         Result AddCardTemplate(CardTemplate cardTemplate);
+        Result<bool> CloseCreatedGameIfNoPlayers(string gameId);
     }
 }

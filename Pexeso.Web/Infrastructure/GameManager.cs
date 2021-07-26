@@ -10,9 +10,9 @@ namespace Pexeso.Infrastructure
 {
     public class GameManager : IGameManager
     {
-        private readonly IDateTimeService _dateTimeService;
         private readonly ConcurrentDictionary<string, CardTemplate> _cardTemplates;
         private readonly ConcurrentDictionary<string, CreatedGame> _createdGames;
+        private readonly IDateTimeService _dateTimeService;
         private readonly ConcurrentDictionary<string, Game> _startedGames;
 
         public GameManager(IDateTimeService dateTimeService)
@@ -74,16 +74,23 @@ namespace Pexeso.Infrastructure
         {
             if (cardTemplate == null) throw new ArgumentNullException(nameof(cardTemplate));
             if (_cardTemplates.ContainsKey(cardTemplate.Name))
-            {
                 return Result.Failure("Card template with this name is already added");
-            }
 
-            if (_cardTemplates.TryAdd(cardTemplate.Name, cardTemplate))
-            {
-                return Result.Success();
-            } 
-            
+            if (_cardTemplates.TryAdd(cardTemplate.Name, cardTemplate)) return Result.Success();
+
             return Result.Failure("Something happened while adding card template");
+        }
+
+        public Result<bool> CloseCreatedGameIfNoPlayers(string gameId)
+        {
+            var (_, isFailure, createdGame, error) = FindCreatedGame(gameId);
+            if (isFailure) return Result.Failure<bool>(error);
+
+            if (createdGame.Players.Count > 0) return Result.Success(false);
+
+            return _createdGames.TryRemove(gameId, out createdGame)
+                ? Result.Success(true)
+                : Result.Failure<bool>("Something happened while closing game");
         }
     }
 }

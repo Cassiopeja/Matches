@@ -69,6 +69,15 @@ namespace Pexeso.Hubs
 
             await Clients.OthersInGroup(gameId).GroupPlayerLeftCreatedGame(playerDto);
             await Clients.Others.PlayerLeftCreatedGame(gameId, playerDto);
+            var isClosedResult = _gameManager.CloseCreatedGameIfNoPlayers(gameId);
+            if (isClosedResult.IsFailure)
+            {
+                // TODO: Log
+            }
+            else
+            {
+                if (isClosedResult.Value) await Clients.All.CreatedGameIsClosed(gameId);
+            }
         }
 
         public async Task<GameDto> StartGame(string gameId)

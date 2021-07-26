@@ -50,7 +50,7 @@ export default {
       await this.$router.push({ name: "Home" });
     },
     async leaveGame() {
-      await this.$gameHub.client.send("LeaveCreatedGame", this.id);
+      await this.$gameHub.client.invoke("LeaveCreatedGame", this.id);
     }
   },
   computed: {
