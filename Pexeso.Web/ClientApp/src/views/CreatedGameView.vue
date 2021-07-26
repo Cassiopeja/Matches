@@ -31,19 +31,30 @@ export default {
   data() {
     return {
       createdGame: null,
-      loading: true
     };
   },
   methods: {
-    async onStartClicked() {
-      console.log("Starting game");
+    onGameStart()
+    {
       try{
-        const startedGame = await this.$gameHub.client.invoke("StartGame", this.id);
-        console.log("startedgame", startedGame)
+        this.$router.push({
+          name: "GameView",
+          params: { id: this.id }
+        });
       }
       catch (e) {
         console.error(e);
-       this.$notify({title:e});
+        this.$notify({title:e});
+      }
+    },
+    async onStartClicked() {
+      try{
+        await this.$gameHub.client.invoke("StartGame", this.id);
+        this.onGameStart();
+      }
+      catch (e) {
+        console.error(e);
+        this.$notify({title:e});
       }
     },
     async onLeaveClicked() {
@@ -69,11 +80,9 @@ export default {
     next();
   },
   async beforeMount() {
-    this.loading = true;
     await CreatedGame.refresh(this.id);
     this.createdGame = CreatedGame.find(this.id);
     await CardTemplate.require(this.createdGame.cardTemplateId);
-    this.loading = false;
 
     this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", (player) => {
       if (this.createdGame.players.find(pl=>pl.id === player.id) === undefined)
@@ -82,15 +91,20 @@ export default {
         this.$notify({ title: player.name + " joined the game" });
       }
     });
-    
+
     this.$gameHub.client.on("GroupPlayerLeftCreatedGame", (player) => {
       this.createdGame.players = this.createdGame.players.filter(pl=> pl.id !== player.id);
       this.$notify({ title: player.name + " left the game" });
+    });
+    
+    this.$gameHub.client.on("GroupGameStarted", () => {
+      this.onGameStart();
     });
   },
   beforeDestroy() {
     this.$gameHub.client.off("GroupPlayerJoinedCreatedGame");
     this.$gameHub.client.off("GroupPlayerLeftCreatedGame");
+    this.$gameHub.client.off("GroupGameStarted");
   }
 };
 </script>

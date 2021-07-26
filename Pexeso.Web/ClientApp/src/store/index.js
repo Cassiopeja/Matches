@@ -7,11 +7,13 @@ import settings from "@/store/settings";
 import createPersistedState from "vuex-persistedstate";
 import CardTemplate from "@/models/CardTemplate";
 import CreatedGame from "@/models/CreatedGame";
+import Game from "@/models/Game";
 
 VuexORM.use(VuexORMAxios, { axios });
 const database = new VuexORM.Database();
 database.register(CardTemplate);
 database.register(CreatedGame);
+database.register(Game);
 
 Vue.use(Vuex);
 

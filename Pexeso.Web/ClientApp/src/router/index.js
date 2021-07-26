@@ -24,6 +24,12 @@ const routes = [
     name: "CreatedGameView",
     component: () => import("../views/CreatedGameView"),
     props: true
+  },
+  {
+    path: "/game/:id",
+    name: "GameView",
+    component: () => import("../views/GameView"),
+    props: true
   }
 ];
 
