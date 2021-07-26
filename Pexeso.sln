@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pexeso.Core", "Pexeso.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pexeso.Core.UnitTests", "Pexeso.Core.UnitTests\Pexeso.Core.UnitTests.csproj", "{51776E20-7685-4CFD-9CFD-4394867577BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pexeso.Web.UnitTests", "Pexeso.Web.UnitTests\Pexeso.Web.UnitTests.csproj", "{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{51776E20-7685-4CFD-9CFD-4394867577BB}.Release|x64.Build.0 = Release|Any CPU
 		{51776E20-7685-4CFD-9CFD-4394867577BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{51776E20-7685-4CFD-9CFD-4394867577BB}.Release|x86.Build.0 = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|x64.Build.0 = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Debug|x86.Build.0 = Debug|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|x64.ActiveCfg = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|x64.Build.0 = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|x86.ActiveCfg = Release|Any CPU
+		{E72AAE6B-81BF-4987-BF1C-1135F4433FBB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
