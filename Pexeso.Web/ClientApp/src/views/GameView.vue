@@ -1,20 +1,22 @@
 <template>
-  <v-container v-if="game" fluid class="fill-height d-flex flex-column">
+  <v-container v-if="game" fluid>
+    <div class="grid-container">
     <div
       v-for="r in game.boardState.rows"
       :key="r"
       class="d-flex flex-grow-1 justify-center"
-      style="width: 80vw"
+      style="width: 100%"
     >
       <v-card
         hover
-        flat
         v-for="c in game.boardState.columns"
         :key="c"
-        class="flex-grow-1 mr-1 mb-1"
+        class="flex-grow-1"
+        style="margin: 3px"
       >
         <div :style="imageStyle"></div>
       </v-card>
+    </div>
     </div>
   </v-container>
 </template>
@@ -60,4 +62,14 @@ export default {
 body {
   margin: 0;
 }
+
+.grid-container {
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+
+}
+
 </style>
