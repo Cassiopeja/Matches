@@ -7,15 +7,21 @@
       class="d-flex flex-grow-1 justify-center"
       style="width: 100%"
     >
-      <v-card
-        hover
-        v-for="c in game.boardState.columns"
-        :key="c"
-        class="flex-grow-1"
-        style="margin: 3px"
+      <div
+          v-for="c in game.boardState.columns"
+          :key="c"
+          class="flex-grow-1 ma-1"
       >
-        <div :style="imageStyle"></div>
-      </v-card>
+        <flipper
+            :flipped="isFlipped"
+            @click="onClick"
+          >
+          <div slot="front" :style="imageStyle(game.boardState.backImageUrl)">
+          </div>
+          <div slot="back" :style="imageStyle('templates/nature/IMG_1057.png')">
+          </div>
+        </flipper>
+      </div>
     </div>
     </div>
   </v-container>
@@ -23,6 +29,7 @@
 
 <script>
 import Game from "@/models/Game";
+import Flipper from 'vue-flipper';
 
 export default {
   name: "GameVue",
@@ -31,22 +38,35 @@ export default {
       required: true
     }
   },
-  computed: {
-    backImageUrl() {
-      const game = Game.find(this.id);
-      const url = window.location.origin + "/" + game.boardState.backImageUrl;
+  data(){
+    return{
+      isFlipped: false  
+    }
+  },
+  components:{
+    Flipper
+  },
+  methods:{
+    onClick(){
+      this.isFlipped = !this.isFlipped;
+    },
+    imageUrl(imagePath) {
+      const url = window.location.origin + "/" + imagePath;
       return url;
     },
-    imageStyle() {
+    imageStyle(image) {
+      const imageFullUrl = this.imageUrl(image);
       return {
         width: "100%",
         height: "100%",
-        backgroundImage: `url(${this.backImageUrl})`,
+        backgroundImage: `url(${imageFullUrl})`,
         backgroundSize: "contain",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "50% 50%"
+        backgroundPosition: "50% 50%",
       };
     },
+  },
+  computed: {
     game() {
       const game = Game.find(this.id);
       return game;
@@ -54,10 +74,11 @@ export default {
   },
   async beforeMount() {
     await Game.refresh(this.id);
-  }
+  },
 };
 </script>
 
+<style src="vue-flipper/dist/vue-flipper.css" />
 <style scoped>
 body {
   margin: 0;
