@@ -42,6 +42,10 @@ namespace Pexeso.Core
             lock (_locker)
             {
                 if (!_playersQueue.IsPlayerTurn(playerId)) return Result.Failure<Card>("This is not your turn");
+                if (GameState == GameState.DoneFirstMove && index == _firstMove.Index)
+                {
+                    return Result.Failure<Card>("You can not select card twice in one round");
+                }
                 var card = _board.OpenCard(index);
                 if (card == Card.NoCard) return Result.Failure<Card>("You selected empty space");
                 if (IsThisFirstMove())
