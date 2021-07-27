@@ -14,9 +14,8 @@ export default class CardTemplate extends Model {
   }
 
   static async reload() {
-    await this.api().get("/cardTemplates", {
-      persistBy: "insertOrUpdate"
-    });
+    await this.deleteAll();
+    await this.api().get("/cardTemplates");
   }
 
   static async refresh(templateId) {

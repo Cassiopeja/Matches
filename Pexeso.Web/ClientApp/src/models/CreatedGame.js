@@ -16,6 +16,7 @@ export default class CreatedGame extends Model {
   }
 
   static async reload() {
+    await this.deleteAll();
     await this.api().get("/createdgames");
   }
 
