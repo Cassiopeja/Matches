@@ -84,7 +84,7 @@ namespace Pexeso.Hubs
         {
             var result = _gameManager.StartGame(gameId, Context.ConnectionId);
             if (result.IsFailure) throw new HubException(result.Error);
-            await Clients.Group(gameId).GroupGameStarted();
+            await Clients.OthersInGroup(gameId).GroupGameStarted();
             await Clients.Others.GameStarted(gameId);
         }
     }

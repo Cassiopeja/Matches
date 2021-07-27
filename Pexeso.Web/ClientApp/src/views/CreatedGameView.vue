@@ -36,16 +36,10 @@ export default {
   methods: {
     onGameStart()
     {
-      try{
         this.$router.push({
           name: "GameView",
           params: { id: this.id }
         });
-      }
-      catch (e) {
-        console.error(e);
-        this.$notify({title:e});
-      }
     },
     async onStartClicked() {
       try{
@@ -58,7 +52,12 @@ export default {
       }
     },
     async onLeaveClicked() {
-      await this.$router.push({ name: "Home" });
+      try{
+        await this.$router.push({ name: "Home" });
+      }
+      catch (e) {
+       console.log(e);
+      }
     },
     async leaveGame() {
       await this.$gameHub.client.invoke("LeaveCreatedGame", this.id);
@@ -74,10 +73,10 @@ export default {
     }
   },
   async beforeRouteLeave(to, from, next) {
-    if (to.name === "Home") {
-      await this.leaveGame();
-    }
-    next();
+      if (to.name === "Home") {
+        await this.leaveGame();
+      }
+      next();
   },
   async beforeMount() {
     await CreatedGame.refresh(this.id);
