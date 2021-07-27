@@ -1,28 +1,30 @@
 <template>
   <v-container v-if="game" fluid>
-    <div class="text-h6 text-center">
-      Current player is {{ game.currentPlayer.name }}
-    </div>
-    <div class="grid-container">
-      <div
-        v-for="r in game.boardState.rows"
-        :key="r"
-        class="d-flex flex-grow-1 justify-center"
-        style="width: 100%"
-      >
+    <div class="d-flex flex-wrap">
+      <div>
+        <PlayersList :game="game" class="justify-start"/>
+      </div>
+      <div class="grid-container">
         <div
-          v-for="c in game.boardState.columns"
-          :key="c"
-          class="flex-grow-1 ma-1"
-          @click="onCardClicked(r, c)"
+          v-for="r in game.boardState.rows"
+          :key="r"
+          class="d-flex flex-grow-1 justify-center"
+          style="width: 100%"
         >
-          <flipper :flipped="isCardFlipped(r, c)" v-if="isCardVisible(r, c)">
-            <div
-              slot="front"
-              :style="imageStyle(game.boardState.backImageUrl)"
-            ></div>
-            <div slot="back" :style="imageStyleFront(r, c)"></div>
-          </flipper>
+          <div
+            v-for="c in game.boardState.columns"
+            :key="c"
+            class="flex-grow-1 ma-1"
+            @click="onCardClicked(r, c)"
+          >
+            <flipper :flipped="isCardFlipped(r, c)" v-if="isCardVisible(r, c)">
+              <div
+                slot="front"
+                :style="imageStyle(game.boardState.backImageUrl)"
+              ></div>
+              <div slot="back" :style="imageStyleFront(r, c)"></div>
+            </flipper>
+          </div>
         </div>
       </div>
     </div>
@@ -33,6 +35,7 @@
 import Game from "@/models/Game";
 import Flipper from "vue-flipper";
 import { mapGetters } from "vuex";
+import PlayersList from "@/components/PlayersList";
 
 export default {
   name: "GameVue",
@@ -47,6 +50,7 @@ export default {
     };
   },
   components: {
+    PlayersList,
     Flipper
   },
   methods: {
@@ -57,8 +61,7 @@ export default {
       if (this.game.currentPlayer.id !== this.currentPlayer.id) {
         return;
       }
-      if (!this.canClick)
-      {
+      if (!this.canClick) {
         return;
       }
       try {
@@ -123,10 +126,8 @@ export default {
 
       return flipped;
     },
-    enableMovesIfCurrentPlayerIsPlaying()
-    {
-      if (this.game.currentPlayer.id === this.currentPlayer.id)
-      {
+    enableMovesIfCurrentPlayerIsPlaying() {
+      if (this.isCurrentPlayerTurn) {
         this.canClick = true;
       }
     }
@@ -136,7 +137,11 @@ export default {
     game() {
       const game = Game.find(this.id);
       return game;
-    }
+    },
+    isCurrentPlayerTurn() {
+      console.log("turn", this.game.currentPlayer.id === this.currentPlayer.id);
+      return this.game.currentPlayer.id === this.currentPlayer.id;
+    },
   },
   async beforeMount() {
     await Game.refresh(this.id);
