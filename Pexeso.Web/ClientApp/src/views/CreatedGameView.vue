@@ -78,7 +78,6 @@ export default {
   },
   async beforeMount() {
     await CreatedGame.refresh(this.id);
-    this.createdGame = CreatedGame.find(this.id);
     await CardTemplate.require(this.createdGame.cardTemplateId);
 
     this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", (player) => {
