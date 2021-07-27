@@ -28,11 +28,6 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      createdGame: null,
-    };
-  },
   methods: {
     onGameStart()
     {
@@ -70,6 +65,9 @@ export default {
     templateImage() {
       const url = window.location.origin + "/" + this.template.backCardImageUrl;
       return url;
+    },
+    createdGame() {
+      return CreatedGame.find(this.id);
     }
   },
   async beforeRouteLeave(to, from, next) {
@@ -86,13 +84,16 @@ export default {
     this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", (player) => {
       if (this.createdGame.players.find(pl=>pl.id === player.id) === undefined)
       {
-        this.createdGame.players.push(player);
+        const players = [...this.createdGame.players];
+        players.push(player);
+        CreatedGame.update({ where: this.id, data: { players: players } });
         this.$notify({ title: player.name + " joined the game" });
       }
     });
 
     this.$gameHub.client.on("GroupPlayerLeftCreatedGame", (player) => {
-      this.createdGame.players = this.createdGame.players.filter(pl=> pl.id !== player.id);
+      const players = this.createdGame.players.filter(pl=> pl.id !== player.id);
+      CreatedGame.update({ where: this.id, data: { players: players } });
       this.$notify({ title: player.name + " left the game" });
     });
     
