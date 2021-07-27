@@ -2,7 +2,7 @@
   <v-container v-if="game" fluid>
     <div class="d-flex flex-wrap">
       <div>
-        <PlayersList :game="game" class="justify-start"/>
+        <PlayersList :game="game" class="justify-start" />
       </div>
       <div class="grid-container">
         <div
@@ -17,13 +17,26 @@
             class="flex-grow-1 ma-1"
             @click="onCardClicked(r, c)"
           >
-            <flipper :flipped="isCardFlipped(r, c)" v-if="isCardVisible(r, c)">
-              <div
-                slot="front"
-                :style="imageStyle(game.boardState.backImageUrl)"
-              ></div>
-              <div slot="back" :style="imageStyleFront(r, c)"></div>
-            </flipper>
+            <v-fab-transition>
+              <v-hover v-slot="{ hover }">
+                <flipper
+                  :flipped="isCardFlipped(r, c)"
+                  v-if="isCardVisible(r, c)"
+                  duration="0.3s"
+                >
+                  <div
+                    slot="front"
+                    :style="imageStyle(game.boardState.backImageUrl)"
+                    :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
+                  />
+                  <div
+                    slot="back"
+                    :style="imageStyleFront(r, c)"
+                    :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
+                  />
+                </flipper>
+              </v-hover>
+            </v-fab-transition>
           </div>
         </div>
       </div>
@@ -36,6 +49,7 @@ import Game from "@/models/Game";
 import Flipper from "vue-flipper";
 import { mapGetters } from "vuex";
 import PlayersList from "@/components/PlayersList";
+import "vue-flipper/dist/vue-flipper.css";
 
 export default {
   name: "GameVue",
@@ -90,7 +104,8 @@ export default {
         backgroundImage: `url(${imageFullUrl})`,
         backgroundSize: "contain",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "50% 50%"
+        backgroundPosition: "50% 50%",
+        borderRadius: "5px"
       };
     },
     imageStyleFront(row, column) {
@@ -139,9 +154,8 @@ export default {
       return game;
     },
     isCurrentPlayerTurn() {
-      console.log("turn", this.game.currentPlayer.id === this.currentPlayer.id);
       return this.game.currentPlayer.id === this.currentPlayer.id;
-    },
+    }
   },
   async beforeMount() {
     await Game.refresh(this.id);
@@ -202,6 +216,7 @@ export default {
     this.$gameHub.client.on("GroupGameIsFinished", () => {
       this.$notify({ title: "Game is over" });
     });
+    
   },
   beforeDestroy() {
     this.$gameHub.client.off("GroupPlayerOpenedCard");
@@ -212,7 +227,6 @@ export default {
 };
 </script>
 
-<style src="vue-flipper/dist/vue-flipper.css" />
 <style scoped>
 body {
   margin: 0;

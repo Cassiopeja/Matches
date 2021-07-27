@@ -6,7 +6,9 @@ import Axios from "axios";
 import gameHubPlugin from "@/plugins/gameHubPlugin";
 import Notification from "vue-notification";
 import store from "./store";
+import VueConfetti from "vue-confetti";
 
+Vue.use(VueConfetti);
 Vue.use(gameHubPlugin);
 Vue.use(Notification);
 Vue.prototype.$http = Axios;
