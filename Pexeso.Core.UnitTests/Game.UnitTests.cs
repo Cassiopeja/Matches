@@ -119,5 +119,25 @@ namespace Pexeso.Core.UnitTests
             result.Should().BeFailure();
             game.GameState.Should().Be(GameState.WaitingForFirstMove);
         }
+
+        [Fact]
+        public void ShouldCheckThatPlayerCanNotOpenSameCardTwiceInRound()
+        {
+            var id = "1212312";
+            var players = Utils.CreatePlayers(2);
+            var board = Utils.CreatePrimitiveBoardTwoOnThree();
+            var player1 = players[0];
+            var player2 = players[1];
+
+            var game = new Game(id, players, board);
+            var result = game.OpenCard(player1.Id, 0);
+            result.Should().BeSuccess();
+            game.GameState.Should().Be(GameState.DoneFirstMove);
+
+            result = game.OpenCard(player1.Id, 0);
+            result.Should().BeFailure();
+            game.GameState.Should().Be(GameState.DoneFirstMove);
+
+        }
     }
 }
