@@ -60,6 +60,14 @@ namespace Pexeso.Hubs
             return result.Value;
         }
 
+        private Game FindStartedGame(string gameId)
+        {
+            var result = _gameManager.FindStartedGame(gameId);
+            if (result.IsFailure) throw new HubException(result.Error);
+
+            return result.Value;
+        }
+
         public async Task LeaveCreatedGame(string gameId)
         {
             var game = FindCreatedGame(gameId);
@@ -86,6 +94,36 @@ namespace Pexeso.Hubs
             if (result.IsFailure) throw new HubException(result.Error);
             await Clients.OthersInGroup(gameId).GroupGameStarted();
             await Clients.Others.GameStarted(gameId);
+        }
+
+        public async Task PlayerOpenedCard(string gameId, PlayerDto player, int cardIndex)
+        {
+            var game = FindStartedGame(gameId);
+            var result = game.OpenCard(player.Id, cardIndex);
+            if (result.IsFailure) throw new HubException(result.Error);
+            var move = game.GameState == GameState.DoneFirstMove ? game.FirstMove : game.SecondMove;
+            var moveDto = _mapper.Map<MoveDto>(move);
+            await Clients.Group(gameId).GroupPlayerOpenedCard(player, moveDto);
+            switch (game.GameState)
+            {
+                case GameState.DoneFirstMove:
+                    return;
+                case GameState.OpenedTwoEqualCards:
+                    await Clients.Group(gameId)
+                        .GroupPlayerOpenedTwoEqualsCards(player, new[] {game.FirstMove.Index, game.SecondMove.Index});
+                    break;
+            }
+
+            if (game.IsGameFinished())
+            {
+                await Clients.Group(gameId).GroupGameIsFinished();
+                return;
+            }
+
+            var nextPlayerResult = game.ChooseNextPlayer();
+            if (result.IsFailure) throw new HubException(nextPlayerResult.Error);
+            var nextPlayerDto = _mapper.Map<PlayerDto>(nextPlayerResult.Value);
+            await Clients.Group(gameId).GroupNextPlayer(nextPlayerDto);
         }
     }
 }

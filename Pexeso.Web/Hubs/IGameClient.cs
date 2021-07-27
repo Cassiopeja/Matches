@@ -13,5 +13,9 @@ namespace Pexeso.Hubs
         Task GroupPlayerJoinedCreatedGame(PlayerDto playerDto);
         Task GroupPlayerLeftCreatedGame(PlayerDto playerDto);
         Task GroupGameStarted();
+        Task GroupPlayerOpenedCard(PlayerDto player, MoveDto move);
+        Task GroupPlayerOpenedTwoEqualsCards(PlayerDto player, int[] openedIndexes);
+        Task GroupNextPlayer(PlayerDto player);
+        Task GroupGameIsFinished();
     }
 }
