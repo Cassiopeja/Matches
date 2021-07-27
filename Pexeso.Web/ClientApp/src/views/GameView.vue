@@ -43,7 +43,7 @@ export default {
   },
   data() {
     return {
-      isFlipped: false
+      canClick: false
     };
   },
   components: {
@@ -57,7 +57,12 @@ export default {
       if (this.game.currentPlayer.id !== this.currentPlayer.id) {
         return;
       }
+      if (!this.canClick)
+      {
+        return;
+      }
       try {
+        this.canClick = false;
         await this.$gameHub.client.invoke(
           "PlayerOpenedCard",
           this.id,
@@ -67,6 +72,7 @@ export default {
       } catch (e) {
         this.$notify({ title: e });
         console.error(e);
+        this.canClick = true;
       }
     },
     imageUrl(imagePath) {
@@ -116,6 +122,13 @@ export default {
       }
 
       return flipped;
+    },
+    enableMovesIfCurrentPlayerIsPlaying()
+    {
+      if (this.game.currentPlayer.id === this.currentPlayer.id)
+      {
+        this.canClick = true;
+      }
     }
   },
   computed: {
@@ -127,6 +140,7 @@ export default {
   },
   async beforeMount() {
     await Game.refresh(this.id);
+    this.enableMovesIfCurrentPlayerIsPlaying();
 
     this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
       const game = Game.find(this.id);
@@ -136,6 +150,7 @@ export default {
           data: { firstMove: move }
         });
         this.$notify({ title: `Player ${player.name} opened first card` });
+        this.enableMovesIfCurrentPlayerIsPlaying();
         return;
       }
 
@@ -177,6 +192,7 @@ export default {
         data: { currentPlayer: player, firstMove: null, secondMove: null }
       });
       this.$notify({ title: `Next player is ${player.name}` });
+      this.enableMovesIfCurrentPlayerIsPlaying();
     });
     this.$gameHub.client.on("GroupGameIsFinished", () => {
       this.$notify({ title: "Game is over" });
