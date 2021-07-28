@@ -21,7 +21,7 @@
               <v-hover v-slot="{ hover }">
                 <flipper
                   :flipped="isCardFlipped(r, c)"
-                  v-if="isCardVisible(r, c)"
+                  v-show="isCardVisible(r, c)"
                   duration="0.3s"
                 >
                   <div
@@ -50,6 +50,7 @@ import Flipper from "vue-flipper";
 import { mapGetters } from "vuex";
 import PlayersList from "@/components/PlayersList";
 import "vue-flipper/dist/vue-flipper.css";
+import GameScore from "@/models/GameScore";
 
 export default {
   name: "GameVue",
@@ -213,10 +214,19 @@ export default {
       this.$notify({ title: `Next player is ${player.name}` });
       this.enableMovesIfCurrentPlayerIsPlaying();
     });
-    this.$gameHub.client.on("GroupGameIsFinished", () => {
-      this.$notify({ title: "Game is over" });
-    });
-    
+    this.$gameHub.client.on(
+      "GroupGameIsFinished",
+      async (orderedByScorePlayers, winners) => {
+        await GameScore.insert({
+          data: {
+            id: this.id,
+            players: orderedByScorePlayers,
+            winners: winners
+          }
+        });
+        await this.$router.push({ name: "GameScoreView", params: { id: this.id }});
+      }
+    );
   },
   beforeDestroy() {
     this.$gameHub.client.off("GroupPlayerOpenedCard");

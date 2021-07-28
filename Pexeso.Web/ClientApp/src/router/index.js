@@ -30,6 +30,12 @@ const routes = [
     name: "GameView",
     component: () => import("../views/GameView"),
     props: true
+  },
+  {
+    path: "/gameScores/:id",
+    name: "GameScoreView",
+    component: () => import("../views/GameScoresView"),
+    props: true
   }
 ];
 

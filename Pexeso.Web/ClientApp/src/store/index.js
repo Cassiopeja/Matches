@@ -8,12 +8,14 @@ import createPersistedState from "vuex-persistedstate";
 import CardTemplate from "@/models/CardTemplate";
 import CreatedGame from "@/models/CreatedGame";
 import Game from "@/models/Game";
+import GameScore from "@/models/GameScore";
 
 VuexORM.use(VuexORMAxios, { axios });
 const database = new VuexORM.Database();
 database.register(CardTemplate);
 database.register(CreatedGame);
 database.register(Game);
+database.register(GameScore);
 
 Vue.use(Vuex);
 
