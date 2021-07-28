@@ -72,6 +72,16 @@ export default {
     delay(ms) {
       return new Promise(res => setTimeout(res, ms));
     },
+    async reloadGame() {
+      await Game.refresh(this.id);
+      try {
+        await this.$gameHub.client.invoke("ConnectToGame", this.id);
+      } catch (e) {
+        console.error(e);
+        this.$notify({ title: e });
+      }
+      this.enableMovesIfCurrentPlayerIsPlaying();
+    },
     async onCardClicked(row, column) {
       if (this.game.currentPlayer.id !== this.currentPlayer.id) {
         return;
@@ -159,9 +169,7 @@ export default {
     }
   },
   async beforeMount() {
-    await Game.refresh(this.id);
-    this.enableMovesIfCurrentPlayerIsPlaying();
-
+    await this.reloadGame();
     this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
       const game = Game.find(this.id);
       if (game.firstMove === null) {
@@ -226,7 +234,10 @@ export default {
             winners: winners
           }
         });
-        await this.$router.push({ name: "GameScoreView", params: { id: this.id }});
+        await this.$router.push({
+          name: "GameScoreView",
+          params: { id: this.id }
+        });
       }
     );
   },

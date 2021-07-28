@@ -130,5 +130,17 @@ namespace Pexeso.Hubs
             var nextPlayerDto = _mapper.Map<PlayerDto>(nextPlayerResult.Value);
             await Clients.Group(gameId).GroupNextPlayer(nextPlayerDto);
         }
+
+        public async Task ConnectToGame(string gameId)
+        {
+            var game = FindStartedGame(gameId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+        }
+        
+        public async Task ConnectToCreatedGame(string gameId)
+        {
+            var game = FindCreatedGame(gameId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+        }
     }
 }

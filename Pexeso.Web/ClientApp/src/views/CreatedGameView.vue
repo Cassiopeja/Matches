@@ -30,6 +30,16 @@ export default {
     }
   },
   methods: {
+    async reloadCreatedGame() {
+      await CreatedGame.refresh(this.id);
+      await CardTemplate.require(this.createdGame.cardTemplateId);
+      try {
+        await this.$gameHub.client.invoke("ConnectToCreatedGame", this.id);
+      } catch (e) {
+        console.error(e);
+        this.$notify({ title: e });
+      }
+    },
     onGameStart()
     {
         this.$router.push({
@@ -79,9 +89,7 @@ export default {
       next();
   },
   async beforeMount() {
-    await CreatedGame.refresh(this.id);
-    await CardTemplate.require(this.createdGame.cardTemplateId);
-
+    await this.reloadCreatedGame();
     this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", (player) => {
       if (this.createdGame.players.find(pl=>pl.id === player.id) === undefined)
       {
