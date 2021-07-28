@@ -184,6 +184,7 @@ export default {
     this.$gameHub.client.on(
       "GroupPlayerOpenedTwoEqualsCards",
       async (player, openedIndexes) => {
+        await this.delay(1000);
         const game = Game.find(this.id);
         game.boardState.openedCardsIndexes = game.boardState.openedCardsIndexes.concat(
           openedIndexes
@@ -206,7 +207,7 @@ export default {
     );
 
     this.$gameHub.client.on("GroupNextPlayer", async player => {
-      await this.delay(3000);
+      await this.delay(1500);
       await Game.update({
         where: this.id,
         data: { currentPlayer: player, firstMove: null, secondMove: null }
@@ -217,6 +218,7 @@ export default {
     this.$gameHub.client.on(
       "GroupGameIsFinished",
       async (orderedByScorePlayers, winners) => {
+        await this.delay(1000);
         await GameScore.insert({
           data: {
             id: this.id,
