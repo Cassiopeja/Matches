@@ -112,7 +112,13 @@ namespace Pexeso.Core
 
         public IReadOnlyList<Player> GetWinners()
         {
-            throw new NotImplementedException();
+            if (Players.Count == 0)
+            {
+                return new List<Player>();
+            }
+            
+            var maxScore = Players.Max(pl => pl.Score);
+            return Players.Where(pl => pl.Score == maxScore).ToList();
         }
 
         private bool IsThisFirstMove()

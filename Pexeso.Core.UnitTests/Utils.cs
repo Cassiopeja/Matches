@@ -44,5 +44,17 @@ namespace Pexeso.Core.UnitTests
 
             return new Board(cards, template.BackCardImageUrl);
         }
+        public static Board CreatePrimitiveBoardTwoOnTwo()
+        {
+            var template = CreateValidCardTemplate(2);
+            var cards = new Card[2, 2];
+            for (var index = 0; index < template.Cards.Count; index++)
+            {
+                cards[0, index] = template.Cards[index];
+                cards[1, index] = template.Cards[index];
+            }
+
+            return new Board(cards, template.BackCardImageUrl);
+        }
     }
 }
