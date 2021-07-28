@@ -19,6 +19,7 @@
 import CreatedGame from "@/models/CreatedGame";
 import CardTemplate from "@/models/CardTemplate";
 import GameCard from "@/components/GameCard";
+import {mapGetters} from "vuex";
 
 export default {
   name: "CreatedGameView",
@@ -38,7 +39,7 @@ export default {
     },
     async onStartClicked() {
       try{
-        await this.$gameHub.client.invoke("StartGame", this.id);
+        await this.$gameHub.client.invoke("StartGame", this.id, this.currentPlayer.id);
         this.onGameStart();
       }
       catch (e) {
@@ -55,10 +56,11 @@ export default {
       }
     },
     async leaveGame() {
-      await this.$gameHub.client.invoke("LeaveCreatedGame", this.id);
+      await this.$gameHub.client.invoke("LeaveCreatedGame", this.id, this.currentPlayer.id);
     }
   },
   computed: {
+    ...mapGetters(["currentPlayer"]),
     template() {
       return CardTemplate.find(this.createdGame.cardTemplateId);
     },
