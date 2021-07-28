@@ -29,7 +29,7 @@ namespace Pexeso.Hubs
                 throw new HubException($"The card template with id {parameters.TemplateId} has not been found");
 
             var gameParameters = new GameParameters(parameters.Rows, parameters.Columns, template);
-            var player = new Player(newPlayerDto.Id, Context.ConnectionId, newPlayerDto.Name, newPlayerDto.Color);
+            var player = new Player(newPlayerDto.Id, newPlayerDto.Name, newPlayerDto.Color);
             var (_, isFailure, game) = _gameManager.CreateNewGame(gameParameters, player);
             if (isFailure) throw new HubException("Can not create game");
 
@@ -42,11 +42,11 @@ namespace Pexeso.Hubs
         public async Task JoinCreatedGame(string gameId, NewPlayerDto newPlayerDto)
         {
             var game = FindCreatedGame(gameId);
-            var player = new Player(newPlayerDto.Id, Context.ConnectionId, newPlayerDto.Name, newPlayerDto.Color);
+            var player = new Player(newPlayerDto.Id, newPlayerDto.Name, newPlayerDto.Color);
             var (_, isFailure, error) = game.Join(player);
             if (isFailure) throw new HubException(error);
 
-            await Groups.AddToGroupAsync(player.ConnectionId, gameId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
             var playerDto = _mapper.Map<PlayerDto>(player);
             await Clients.OthersInGroup(gameId).GroupPlayerJoinedCreatedGame(playerDto);
             await Clients.Others.PlayerJoinedCreatedGame(gameId, playerDto);
@@ -68,10 +68,10 @@ namespace Pexeso.Hubs
             return result.Value;
         }
 
-        public async Task LeaveCreatedGame(string gameId)
+        public async Task LeaveCreatedGame(string gameId, string playerId)
         {
             var game = FindCreatedGame(gameId);
-            var result = game.Leave(Context.ConnectionId);
+            var result = game.Leave(playerId);
             if (result.IsFailure) throw new HubException(result.Error);
             var playerDto = _mapper.Map<PlayerDto>(result.Value);
 
@@ -88,9 +88,9 @@ namespace Pexeso.Hubs
             }
         }
 
-        public async Task StartGame(string gameId)
+        public async Task StartGame(string gameId, string playerId)
         {
-            var result = _gameManager.StartGame(gameId, Context.ConnectionId);
+            var result = _gameManager.StartGame(gameId, playerId);
             if (result.IsFailure) throw new HubException(result.Error);
             await Clients.OthersInGroup(gameId).GroupGameStarted();
             await Clients.Others.GameStarted(gameId);

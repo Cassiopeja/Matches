@@ -39,11 +39,11 @@ namespace Pexeso.Core
             return Result.Success();
         }
 
-        public Result<Player> Leave(string connectionId)
+        public Result<Player> Leave(string playerId)
         {
             lock (_locker)
             {
-                var player = _players.FirstOrDefault(pl => pl.ConnectionId == connectionId);
+                var player = _players.FirstOrDefault(pl => pl.Id == playerId);
                 if (player == null)
                 {
                     return Result.Failure<Player>("Player is not in the game"); 

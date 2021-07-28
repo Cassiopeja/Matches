@@ -19,7 +19,7 @@ namespace Pexeso.Core.UnitTests
             game.Id.Should().BeEquivalentTo(id);
             game.GameState.Should().BeEquivalentTo(GameState.WaitingForFirstMove);
             var player = game.ChooseNextPlayer();
-            player.Value.ConnectionId.Should().BeEquivalentTo(players[0].ConnectionId);
+            player.Value.Id.Should().BeEquivalentTo(players[0].Id);
         }
 
         [Fact]
