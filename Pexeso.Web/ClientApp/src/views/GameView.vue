@@ -6,6 +6,12 @@
       </div>
       <div class="grid-container">
         <div
+          :style="{ visibility: isCurrentPlayerTurn ? 'visible' : 'hidden' }"
+          class="font-weight-light text-center"
+        >
+          Your turn
+        </div>
+        <div
           v-for="r in game.boardState.rows"
           :key="r"
           class="d-flex flex-grow-1 justify-center"
