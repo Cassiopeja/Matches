@@ -127,7 +127,6 @@ namespace Pexeso.Core.UnitTests
             var players = Utils.CreatePlayers(2);
             var board = Utils.CreatePrimitiveBoardTwoOnThree();
             var player1 = players[0];
-            var player2 = players[1];
 
             var game = new Game(id, players, board);
             var result = game.OpenCard(player1.Id, 0);
@@ -138,6 +137,59 @@ namespace Pexeso.Core.UnitTests
             result.Should().BeFailure();
             game.GameState.Should().Be(GameState.DoneFirstMove);
 
+        }
+
+        [Fact]
+        public void ShouldReturnOneWinnerAfterGame()
+        {
+            var id = "1212312";
+            var players = Utils.CreatePlayers(2);
+            var board = Utils.CreatePrimitiveBoardTwoOnTwo();
+            var player1 = players[0];
+            
+            var game = new Game(id, players, board);
+            var result = game.OpenCard(player1.Id, 0);
+            
+            result.Should().BeSuccess();
+            game.IsGameFinished().Should().BeFalse();
+            
+            var nextPlayer = game.ChooseNextPlayer();
+            
+            nextPlayer.Should().BeSuccess();
+            nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
+            game.GameState.Should().Be(GameState.DoneFirstMove);
+            
+            result = game.OpenCard(player1.Id, 2);
+            
+            result.Should().BeSuccess();
+            game.GameState.Should().Be(GameState.OpenedTwoEqualCards);
+            game.IsGameFinished().Should().BeFalse();
+            
+            nextPlayer = game.ChooseNextPlayer();
+            
+            nextPlayer.Should().BeSuccess();
+            nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
+            game.GameState.Should().Be(GameState.WaitingForFirstMove);
+            
+            result = game.OpenCard(player1.Id, 1);
+            
+            result.Should().BeSuccess();
+            game.IsGameFinished().Should().BeFalse();
+            nextPlayer = game.ChooseNextPlayer();
+            nextPlayer.Should().BeSuccess();
+            nextPlayer.Value.Id.Should().BeEquivalentTo(player1.Id);
+            game.GameState.Should().Be(GameState.DoneFirstMove);
+            
+            result = game.OpenCard(player1.Id, 3);
+            
+            result.Should().BeSuccess();
+            game.IsGameFinished().Should().BeTrue();
+
+            var winners = game.GetWinners();
+
+            winners.Should().NotBeNull();
+            winners.Should().ContainSingle(pl => pl.Id == player1.Id);
+            winners.Count.Should().Be(1);
         }
     }
 }

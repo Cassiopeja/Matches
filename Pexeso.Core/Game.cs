@@ -110,6 +110,11 @@ namespace Pexeso.Core
             }
         }
 
+        public IReadOnlyList<Player> GetWinners()
+        {
+            throw new NotImplementedException();
+        }
+
         private bool IsThisFirstMove()
         {
             return _firstMove == null;
