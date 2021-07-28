@@ -16,6 +16,6 @@ namespace Pexeso.Hubs
         Task GroupPlayerOpenedCard(PlayerDto player, MoveDto move);
         Task GroupPlayerOpenedTwoEqualsCards(PlayerDto player, int[] openedIndexes);
         Task GroupNextPlayer(PlayerDto player);
-        Task GroupGameIsFinished();
+        Task GroupGameIsFinished(PlayerDto[] orderedByScorePlayers, PlayerDto[] winners);
     }
 }

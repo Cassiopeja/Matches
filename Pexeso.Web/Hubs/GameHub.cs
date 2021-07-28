@@ -116,7 +116,12 @@ namespace Pexeso.Hubs
 
             if (game.IsGameFinished())
             {
-                await Clients.Group(gameId).GroupGameIsFinished();
+                var orderedPlayers = game.Players.Select(pl => _mapper.Map<PlayerDto>(pl)).OrderByDescending(pl => pl.Score)
+                    .ToArray();
+                var winners = game.GetWinners().Select(pl=>_mapper.Map<PlayerDto>(pl)).ToArray();
+
+                await Clients.Group(gameId).GroupGameIsFinished(orderedPlayers, winners);
+                _gameManager.FinishGame(gameId);
                 return;
             }
 
