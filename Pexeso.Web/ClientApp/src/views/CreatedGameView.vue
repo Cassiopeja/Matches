@@ -42,6 +42,7 @@ export default {
     },
     onGameStart()
     {
+        CreatedGame.delete(this.id);
         this.$router.push({
           name: "GameView",
           params: { id: this.id }

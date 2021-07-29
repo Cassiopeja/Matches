@@ -86,7 +86,7 @@ export default {
         this.$notify({ title: e });
         console.error(e);
       }
-    }
+    },
   },
   computed: {
     ...mapGetters(["currentPlayer"]),
@@ -124,11 +124,9 @@ export default {
       this.$notify({ title: player.name + " left the game" });
     });
     this.$gameHub.client.on("CreatedGameIsClosed", (gameId) => {
-      const game = CreatedGame.find(gameId);
-      if (game === null) {
-        return;
-      }
-      this.$notify({title:`Game created by ${game.createdBy} is closed`})
+      CreatedGame.delete(gameId);
+    });
+    this.$gameHub.client.on("GameStarted", (gameId) => {
       CreatedGame.delete(gameId);
     });
   },
@@ -138,6 +136,7 @@ export default {
     this.$gameHub.client.off("PlayerLeftCreatedGame");
     this.$gameHub.client.off("PlayerLeftCreatedGame");
     this.$gameHub.client.off("CreatedGameIsClosed");
+    this.$gameHub.client.off("GameStarted");
   }
 };
 </script>

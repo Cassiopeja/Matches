@@ -78,7 +78,12 @@ export default {
     delay(ms) {
       return new Promise(res => setTimeout(res, ms));
     },
-    async reloadGame() {
+    async gameReload()
+    {
+      await Game.refresh(this.id);
+      this.enableMovesIfCurrentPlayerIsPlaying();
+    },
+    async fullGameAndHubReload() {
       await Game.refresh(this.id);
       try {
         await this.$gameHub.client.invoke("ConnectToGame", this.id);
@@ -87,6 +92,23 @@ export default {
         this.$notify({ title: e });
       }
       this.enableMovesIfCurrentPlayerIsPlaying();
+    },
+    async reconnectAndReload(){
+      if (this.$gameHub.client.state === "Connecting")
+      {
+        while(this.$gameHub.client.state !== "Connected" && this.$gameHub.client.state !== "Disconnected")
+        {
+          await this.delay(1000);
+        }
+      }
+      if (this.$gameHub.client.state === "Disconnected")
+      {
+        console.error("Can not connected to hub")
+      }
+      else
+      {
+        await this.fullGameAndHubReload();
+      }
     },
     async onCardClicked(row, column) {
       if (this.game.currentPlayer.id !== this.currentPlayer.id) {
@@ -167,15 +189,21 @@ export default {
   computed: {
     ...mapGetters(["currentPlayer"]),
     game() {
-      const game = Game.find(this.id);
-      return game;
+      return Game.find(this.id);
     },
     isCurrentPlayerTurn() {
       return this.game.currentPlayer.id === this.currentPlayer.id;
     }
   },
   async beforeMount() {
-    await this.reloadGame();
+    if (this.$gameHub.client.state === "Connected")
+    {
+      await this.gameReload();
+    }
+    else {
+      await this.reconnectAndReload();
+    }
+    // await this.reloadGame();
     this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
       const game = Game.find(this.id);
       if (game.firstMove === null) {
@@ -183,7 +211,6 @@ export default {
           where: this.id,
           data: { firstMove: move }
         });
-        this.$notify({ title: `Player ${player.name} opened first card` });
         this.enableMovesIfCurrentPlayerIsPlaying();
         return;
       }
@@ -192,7 +219,6 @@ export default {
         where: this.id,
         data: { secondMove: move }
       });
-      this.$notify({ title: `Player ${player.name} opened second card` });
     });
 
     this.$gameHub.client.on(
@@ -214,9 +240,6 @@ export default {
             players: game.players
           }
         });
-        this.$notify({
-          title: `Player ${player.name} opened two equals cards`
-        });
       }
     );
 
@@ -226,7 +249,6 @@ export default {
         where: this.id,
         data: { currentPlayer: player, firstMove: null, secondMove: null }
       });
-      this.$notify({ title: `Next player is ${player.name}` });
       this.enableMovesIfCurrentPlayerIsPlaying();
     });
     this.$gameHub.client.on(
@@ -246,6 +268,9 @@ export default {
         });
       }
     );
+    this.$gameHub.client.onreconnected(async () => {
+      await this.fullGameAndHubReload();
+    });
   },
   beforeDestroy() {
     this.$gameHub.client.off("GroupPlayerOpenedCard");

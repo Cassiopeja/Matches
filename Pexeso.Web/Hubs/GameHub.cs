@@ -43,6 +43,12 @@ namespace Pexeso.Hubs
         {
             var game = FindCreatedGame(gameId);
             var player = new Player(newPlayerDto.Id, newPlayerDto.Name, newPlayerDto.Color);
+            if (game.Players.Any(pl => pl.Id == player.Id))
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+                return;
+            }
+            
             var (_, isFailure, error) = game.Join(player);
             if (isFailure) throw new HubException(error);
 
