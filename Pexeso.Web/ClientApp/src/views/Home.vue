@@ -86,7 +86,7 @@ export default {
         this.$notify({ title: e });
         console.error(e);
       }
-    },
+    }
   },
   computed: {
     ...mapGetters(["currentPlayer"]),
@@ -105,28 +105,19 @@ export default {
 
     this.$gameHub.client.on("PlayerJoinedCreatedGame", (gameId, player) => {
       const game = CreatedGame.find(gameId);
-      if (game === null) {
-        return;
-      }
-      const players = [...game.players];
-      players.push(player);
-      CreatedGame.update({ where: gameId, data: { players: players } });
+      game.addPlayer(player);
       this.$notify({ title: player.name + " joined the game" });
     });
 
     this.$gameHub.client.on("PlayerLeftCreatedGame", (gameId, player) => {
       const game = CreatedGame.find(gameId);
-      if (game === null) {
-        return;
-      }
-      const players = game.players.filter(pl => pl.id !== player.id);
-      CreatedGame.update({ where: gameId, data: { players: players } });
+      game.removePlayer(player);
       this.$notify({ title: player.name + " left the game" });
     });
-    this.$gameHub.client.on("CreatedGameIsClosed", (gameId) => {
+    this.$gameHub.client.on("CreatedGameIsClosed", gameId => {
       CreatedGame.delete(gameId);
     });
-    this.$gameHub.client.on("GameStarted", (gameId) => {
+    this.$gameHub.client.on("GameStarted", gameId => {
       CreatedGame.delete(gameId);
     });
   },

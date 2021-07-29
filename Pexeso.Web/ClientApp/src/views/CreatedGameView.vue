@@ -76,8 +76,7 @@ export default {
       return CardTemplate.find(this.createdGame.cardTemplateId);
     },
     templateImage() {
-      const url = window.location.origin + "/" + this.template.backCardImageUrl;
-      return url;
+      return window.location.origin + "/" + this.template.backCardImageUrl;
     },
     createdGame() {
       return CreatedGame.find(this.id);
@@ -91,19 +90,13 @@ export default {
   },
   async beforeMount() {
     await this.reloadCreatedGame();
-    this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", (player) => {
-      if (this.createdGame.players.find(pl=>pl.id === player.id) === undefined)
-      {
-        const players = [...this.createdGame.players];
-        players.push(player);
-        CreatedGame.update({ where: this.id, data: { players: players } });
-        this.$notify({ title: player.name + " joined the game" });
-      }
+    this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", async (player) => {
+      await this.createdGame.addPlayer(player);
+      this.$notify({ title: player.name + " joined the game" });
     });
 
-    this.$gameHub.client.on("GroupPlayerLeftCreatedGame", (player) => {
-      const players = this.createdGame.players.filter(pl=> pl.id !== player.id);
-      CreatedGame.update({ where: this.id, data: { players: players } });
+    this.$gameHub.client.on("GroupPlayerLeftCreatedGame", async (player) => {
+      await this.createdGame.removePlayer(player);
       this.$notify({ title: player.name + " left the game" });
     });
     

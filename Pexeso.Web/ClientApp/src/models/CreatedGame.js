@@ -29,4 +29,17 @@ export default class CreatedGame extends Model {
   static async require(id) {
     if (!this.find(id)) await this.refresh(id);
   }
+
+  async addPlayer(player) {
+    if (this.players.find(pl => pl.id === player.id) === undefined) {
+      const players = [...this.players];
+      players.push(player);
+      await this.$update({ players: players });
+    }
+  }
+
+  async removePlayer(player) {
+    const players = this.players.filter(pl => pl.id !== player.id);
+    await this.$update({ players: players });
+  }
 }
