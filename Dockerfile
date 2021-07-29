@@ -30,4 +30,6 @@ WORKDIR /app
 COPY --from=publish /app/publish publish/
 COPY --from=publish  /app/publish/ClientApp/dist publish/ClientApp/dist
 WORKDIR /app/publish
-ENTRYPOINT ["dotnet", "Pexeso.Web.dll"]
+#ENTRYPOINT ["dotnet", "Pexeso.Web.dll"]
+# Use the following instead for Heroku
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet Pexeso.Web.dll
