@@ -17,33 +17,13 @@
           class="d-flex flex-grow-1 justify-center"
           style="width: 100%"
         >
-          <div
+          <Card
             v-for="index in game.indexesInRow(r)"
             :key="index"
-            class="flex-grow-1 ma-1"
+            :game="game"
+            :index="index"
             @click="onCardClicked(index)"
-          >
-            <v-fab-transition>
-              <v-hover v-slot="{ hover }">
-                <flipper
-                  :flipped="game.isCardFlipped(index)"
-                  v-show="game.isCardVisible(index)"
-                  duration="0.3s"
-                >
-                  <div
-                    slot="front"
-                    :style="imageCardStyle(index)"
-                    :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
-                  />
-                  <div
-                    slot="back"
-                    :style="imageCardStyle(index)"
-                    :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
-                  />
-                </flipper>
-              </v-hover>
-            </v-fab-transition>
-          </div>
+          />
         </div>
       </div>
     </div>
@@ -52,11 +32,10 @@
 
 <script>
 import Game from "@/models/Game";
-import Flipper from "vue-flipper";
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
 import PlayersList from "@/components/PlayersList";
-import "vue-flipper/dist/vue-flipper.css";
 import GameScore from "@/models/GameScore";
+import Card from "@/components/Card";
 
 export default {
   name: "GameVue",
@@ -71,8 +50,8 @@ export default {
     };
   },
   components: {
-    PlayersList,
-    Flipper
+    Card,
+    PlayersList
   },
   methods: {
     delay(ms) {
@@ -128,23 +107,6 @@ export default {
         this.canClick = true;
       }
     },
-    imageStyle(image) {
-      const imageFullUrl = window.location.origin + "/" + image;
-      return {
-        width: "100%",
-        height: "100%",
-        backgroundImage: `url(${imageFullUrl})`,
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "50% 50%",
-        borderRadius: "5px"
-      };
-    },
-    imageCardStyle(index)
-    {
-      const image = this.game.getCardImage(index)
-      return this.imageStyle(image);
-    },
   },
   computed: {
     ...mapGetters(["currentPlayer"]),
@@ -153,7 +115,7 @@ export default {
     },
     isCurrentPlayerTurn() {
       return this.game.currentPlayer.id === this.currentPlayer.id;
-    }
+    },
   },
   async beforeMount() {
     if (this.$gameHub.client.state === "Connected") {

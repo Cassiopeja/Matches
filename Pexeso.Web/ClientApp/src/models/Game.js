@@ -81,16 +81,16 @@ export default class Game extends Model {
     return this.firstMove?.index === index || this.secondMove?.index === index;
   }
 
-  getCardImage(index) {
-    if (!this.isCardFlipped(index)) {
-      return this.boardState.backImageUrl;
-    }
-
+  getFrontImage(index) {
     let image = this.secondMove?.cardImageUrl;
     if (this.firstMove?.index === index) {
       image = this.firstMove.cardImageUrl;
     }
 
     return image;
+  }
+
+  getBackImage() {
+    return this.boardState.backImageUrl;
   }
 }
