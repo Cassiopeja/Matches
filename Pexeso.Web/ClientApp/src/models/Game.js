@@ -24,4 +24,43 @@ export default class Game extends Model {
   static async require(id) {
     if (!this.find(id)) await this.refresh(id);
   }
+
+  isFirstMove() {
+    return this.firstMove === null;
+  }
+
+  async doFirstMove(move) {
+    await this.$update({
+      firstMove: move
+    });
+  }
+
+  async doSecondMove(move) {
+    await this.$update({
+      secondMove: move
+    });
+  }
+
+  async playerOpenedTwoEqualsCards(player, openedIndexes) {
+    const boardState = this.boardState;
+    boardState.openedCardsIndexes = boardState.openedCardsIndexes.concat(
+      openedIndexes
+    );
+    const scorePlayer = this.players.find(pl => pl.id === player.id);
+    scorePlayer.score++;
+    await this.$update({
+      boardState: boardState,
+      firstMove: null,
+      secondMove: null,
+      players: this.players
+    });
+  }
+
+  async setNextPlayer(player) {
+    await this.$update({
+      currentPlayer: player,
+      firstMove: null,
+      secondMove: null
+    });
+  }
 }

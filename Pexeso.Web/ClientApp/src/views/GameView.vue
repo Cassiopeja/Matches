@@ -53,7 +53,7 @@
 <script>
 import Game from "@/models/Game";
 import Flipper from "vue-flipper";
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import PlayersList from "@/components/PlayersList";
 import "vue-flipper/dist/vue-flipper.css";
 import GameScore from "@/models/GameScore";
@@ -78,8 +78,7 @@ export default {
     delay(ms) {
       return new Promise(res => setTimeout(res, ms));
     },
-    async gameReload()
-    {
+    async gameReload() {
       await Game.refresh(this.id);
       this.enableMovesIfCurrentPlayerIsPlaying();
     },
@@ -93,20 +92,18 @@ export default {
       }
       this.enableMovesIfCurrentPlayerIsPlaying();
     },
-    async reconnectAndReload(){
-      if (this.$gameHub.client.state === "Connecting")
-      {
-        while(this.$gameHub.client.state !== "Connected" && this.$gameHub.client.state !== "Disconnected")
-        {
+    async reconnectAndReload() {
+      if (this.$gameHub.client.state === "Connecting") {
+        while (
+          this.$gameHub.client.state !== "Connected" &&
+          this.$gameHub.client.state !== "Disconnected"
+        ) {
           await this.delay(1000);
         }
       }
-      if (this.$gameHub.client.state === "Disconnected")
-      {
-        console.error("Can not connected to hub")
-      }
-      else
-      {
+      if (this.$gameHub.client.state === "Disconnected") {
+        console.error("Can not connect to hub");
+      } else {
         await this.fullGameAndHubReload();
       }
     },
@@ -132,8 +129,7 @@ export default {
       }
     },
     imageUrl(imagePath) {
-      const url = window.location.origin + "/" + imagePath;
-      return url;
+      return window.location.origin + "/" + imagePath;
     },
     imageStyle(image) {
       const imageFullUrl = this.imageUrl(image);
@@ -196,59 +192,32 @@ export default {
     }
   },
   async beforeMount() {
-    if (this.$gameHub.client.state === "Connected")
-    {
+    if (this.$gameHub.client.state === "Connected") {
       await this.gameReload();
-    }
-    else {
+    } else {
       await this.reconnectAndReload();
     }
-    // await this.reloadGame();
-    this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
-      const game = Game.find(this.id);
-      if (game.firstMove === null) {
-        await Game.update({
-          where: this.id,
-          data: { firstMove: move }
-        });
-        this.enableMovesIfCurrentPlayerIsPlaying();
-        return;
-      }
 
-      await Game.update({
-        where: this.id,
-        data: { secondMove: move }
-      });
+    this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
+      if (this.game.isFirstMove()) {
+        await this.game.doFirstMove(move);
+        this.enableMovesIfCurrentPlayerIsPlaying();
+      } else {
+        await this.game.doSecondMove(move);
+      }
     });
 
     this.$gameHub.client.on(
       "GroupPlayerOpenedTwoEqualsCards",
       async (player, openedIndexes) => {
         await this.delay(1000);
-        const game = Game.find(this.id);
-        game.boardState.openedCardsIndexes = game.boardState.openedCardsIndexes.concat(
-          openedIndexes
-        );
-        const scorePlayer = game.players.find(pl => pl.id === player.id);
-        scorePlayer.score++;
-        await Game.update({
-          where: this.id,
-          data: {
-            boardState: game.boardState,
-            firstMove: null,
-            secondMove: null,
-            players: game.players
-          }
-        });
+        await this.game.playerOpenedTwoEqualsCards(player, openedIndexes);
       }
     );
 
     this.$gameHub.client.on("GroupNextPlayer", async player => {
       await this.delay(1500);
-      await Game.update({
-        where: this.id,
-        data: { currentPlayer: player, firstMove: null, secondMove: null }
-      });
+      await this.game.setNextPlayer(player);
       this.enableMovesIfCurrentPlayerIsPlaying();
     });
     this.$gameHub.client.on(
@@ -262,6 +231,7 @@ export default {
             winners: winners
           }
         });
+        await Game.delete(this.id);
         await this.$router.push({
           name: "GameScoreView",
           params: { id: this.id }

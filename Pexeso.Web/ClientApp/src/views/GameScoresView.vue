@@ -4,17 +4,17 @@
       <v-card-title class="font-weight-bold">Game scores:</v-card-title>
       <v-divider></v-divider>
       <v-list denst>
-        <v-list-item
-          v-for="player in gameScore.players" :key="player.id"
-        >
+        <v-list-item v-for="player in gameScore.players" :key="player.id">
           <v-list-item-icon class="mr-2">
             <v-icon v-if="isWinner(player)" color="#cc9900">mdi-trophy</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar class="mr-2">
-            <PlayerAvatar :player="player" size="32"/>
+            <PlayerAvatar :player="player" size="32" />
           </v-list-item-avatar>
-          <v-list-item-content>{{player.name}}</v-list-item-content>
-          <v-list-item-content class="align-end">{{player.score}}</v-list-item-content>
+          <v-list-item-content>{{ player.name }}</v-list-item-content>
+          <v-list-item-content class="align-end">{{
+            player.score
+          }}</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-card>
@@ -34,9 +34,11 @@ export default {
     }
   },
   components: { PlayerAvatar },
-  methods:{
+  methods: {
     isWinner(player) {
-      return this.gameScore.winners.find(pl=>pl.id === player.id) !== undefined;
+      return (
+        this.gameScore.winners.find(pl => pl.id === player.id) !== undefined
+      );
     }
   },
   computed: {
@@ -46,15 +48,19 @@ export default {
     }
   },
   mounted() {
-    if (this.gameScore !== null && this.gameScore?.winners?.find(pl=>pl.id === this.currentPlayer.id) !== undefined)
-    {
+    if (
+      this.gameScore !== null &&
+      this.gameScore?.winners?.find(pl => pl.id === this.currentPlayer.id) !==
+        undefined
+    ) {
       this.$confetti.start();
     }
   },
-  beforeRouteLeave(to, from, next) {
+  async beforeRouteLeave(to, from, next) {
+    await GameScore.delete(this.id);
     this.$confetti.stop();
     next();
-  },
+  }
 };
 </script>
 
