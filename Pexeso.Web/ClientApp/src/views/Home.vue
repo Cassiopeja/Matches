@@ -50,12 +50,6 @@ export default {
       show: {
         gameDialog: false,
         playerDialog: false
-      },
-      showGameDialog: {
-        dialog: false
-      },
-      showPlayerDialog: {
-        dialog: false
       }
     };
   },

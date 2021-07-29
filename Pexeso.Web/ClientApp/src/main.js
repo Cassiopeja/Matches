@@ -22,7 +22,7 @@ new Vue({
 
   created() {
     this.$http.interceptors.request.use(config => {
-      config.baseURL = `${process.env.VUE_APP_BACKEND_API}/api`;
+      config.baseURL = `/api`;
       return config;
     });
   }
