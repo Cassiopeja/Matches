@@ -18,26 +18,26 @@
           style="width: 100%"
         >
           <div
-            v-for="c in game.boardState.columns"
-            :key="c"
+            v-for="index in game.indexesInRow(r)"
+            :key="index"
             class="flex-grow-1 ma-1"
-            @click="onCardClicked(r, c)"
+            @click="onCardClicked(index)"
           >
             <v-fab-transition>
               <v-hover v-slot="{ hover }">
                 <flipper
-                  :flipped="isCardFlipped(r, c)"
-                  v-show="isCardVisible(r, c)"
+                  :flipped="game.isCardFlipped(index)"
+                  v-show="game.isCardVisible(index)"
                   duration="0.3s"
                 >
                   <div
                     slot="front"
-                    :style="imageStyle(game.boardState.backImageUrl)"
+                    :style="imageCardStyle(index)"
                     :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
                   />
                   <div
                     slot="back"
-                    :style="imageStyleFront(r, c)"
+                    :style="imageCardStyle(index)"
                     :class="{ 'elevation-2': !hover, 'elevation-4': hover }"
                   />
                 </flipper>
@@ -78,6 +78,11 @@ export default {
     delay(ms) {
       return new Promise(res => setTimeout(res, ms));
     },
+    enableMovesIfCurrentPlayerIsPlaying() {
+      if (this.isCurrentPlayerTurn) {
+        this.canClick = true;
+      }
+    },
     async gameReload() {
       await Game.refresh(this.id);
       this.enableMovesIfCurrentPlayerIsPlaying();
@@ -107,11 +112,8 @@ export default {
         await this.fullGameAndHubReload();
       }
     },
-    async onCardClicked(row, column) {
-      if (this.game.currentPlayer.id !== this.currentPlayer.id) {
-        return;
-      }
-      if (!this.canClick) {
+    async onCardClicked(index) {
+      if (!(this.isCurrentPlayerTurn && this.canClick)) {
         return;
       }
       try {
@@ -120,19 +122,14 @@ export default {
           "PlayerOpenedCard",
           this.id,
           this.currentPlayer,
-          this.index(row, column)
+          index
         );
       } catch (e) {
-        this.$notify({ title: e });
-        console.error(e);
         this.canClick = true;
       }
     },
-    imageUrl(imagePath) {
-      return window.location.origin + "/" + imagePath;
-    },
     imageStyle(image) {
-      const imageFullUrl = this.imageUrl(image);
+      const imageFullUrl = window.location.origin + "/" + image;
       return {
         width: "100%",
         height: "100%",
@@ -143,44 +140,11 @@ export default {
         borderRadius: "5px"
       };
     },
-    imageStyleFront(row, column) {
-      if (!this.isCardFlipped(row, column)) {
-        return null;
-      }
-
-      const index = this.index(row, column);
-      let image = this.game.secondMove?.cardImageUrl;
-      if (this.game.firstMove?.index === index) {
-        image = this.game.firstMove.cardImageUrl;
-      }
+    imageCardStyle(index)
+    {
+      const image = this.game.getCardImage(index)
       return this.imageStyle(image);
     },
-    index(row, column) {
-      return (row - 1) * this.game.boardState.columns + column - 1;
-    },
-    isCardVisible(row, column) {
-      return !this.game.boardState.openedCardsIndexes.includes(
-        this.index(row, column)
-      );
-    },
-    isCardFlipped(row, column) {
-      const index = this.index(row, column);
-      let flipped = false;
-
-      if (
-        this.game.firstMove?.index === index ||
-        this.game.secondMove?.index === index
-      ) {
-        flipped = true;
-      }
-
-      return flipped;
-    },
-    enableMovesIfCurrentPlayerIsPlaying() {
-      if (this.isCurrentPlayerTurn) {
-        this.canClick = true;
-      }
-    }
   },
   computed: {
     ...mapGetters(["currentPlayer"]),

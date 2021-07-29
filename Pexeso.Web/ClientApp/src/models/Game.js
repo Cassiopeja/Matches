@@ -63,4 +63,34 @@ export default class Game extends Model {
       secondMove: null
     });
   }
+
+  //row starts with 1
+  indexesInRow(row) {
+    const indexes = [];
+    for (let column = 0; column < this.boardState.columns; column++) {
+      indexes.push((row - 1) * this.boardState.columns + column);
+    }
+    return indexes;
+  }
+
+  isCardVisible(index) {
+    return !this.boardState.openedCardsIndexes.includes(index);
+  }
+
+  isCardFlipped(index) {
+    return this.firstMove?.index === index || this.secondMove?.index === index;
+  }
+
+  getCardImage(index) {
+    if (!this.isCardFlipped(index)) {
+      return this.boardState.backImageUrl;
+    }
+
+    let image = this.secondMove?.cardImageUrl;
+    if (this.firstMove?.index === index) {
+      image = this.firstMove.cardImageUrl;
+    }
+
+    return image;
+  }
 }
