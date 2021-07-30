@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="onCreateNewGameClicked" v-if="currentPlayer" color="pink" dark
+          <v-btn @click="onCreateNewGameClicked" v-if="currentPlayer" color="pink" dark 
             >Create new game</v-btn
           >
         </v-col>
