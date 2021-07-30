@@ -13,15 +13,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
 
 WORKDIR /src
 COPY *.sln .
-COPY ["Pexeso.Web/Pexeso.Web.csproj", "Pexeso.Web/"]
-COPY ["Pexeso.Core/Pexeso.Core.csproj", "Pexeso.Core/"]
-RUN dotnet restore "Pexeso.Web/Pexeso.Web.csproj"
+COPY ["Matches.Web/Matches.Web.csproj", "Matches.Web/"]
+COPY ["Matches.Core/Matches.Core.csproj", "Matches.Core/"]
+RUN dotnet restore "Matches.Web/Matches.Web.csproj"
 COPY . .
-WORKDIR "/src/Pexeso.Web"
-RUN dotnet build "Pexeso.Web.csproj" -c Release -o /app/build
+WORKDIR "/src/Matches.Web"
+RUN dotnet build "Matches.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Pexeso.Web.csproj" -c Release -o /app/publish
+RUN dotnet publish "Matches.Web.csproj" -c Release -o /app/publish
 RUN mkdir /app/publish/ClientApp
 RUN cp -R "ClientApp/dist" /app/publish/ClientApp/dist
 #
@@ -30,6 +30,6 @@ WORKDIR /app
 COPY --from=publish /app/publish publish/
 COPY --from=publish  /app/publish/ClientApp/dist publish/ClientApp/dist
 WORKDIR /app/publish
-#ENTRYPOINT ["dotnet", "Pexeso.Web.dll"]
+#ENTRYPOINT ["dotnet", "Matches.Web.dll"]
 # Use the following instead for Heroku
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet Pexeso.Web.dll
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet Matches.Web.dll
