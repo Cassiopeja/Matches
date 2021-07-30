@@ -3,7 +3,7 @@
     <v-container>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="onCreateNewGameClicked" color="pink" dark
+          <v-btn @click="onCreateNewGameClicked" v-if="currentPlayer" color="pink" dark
             >Create new game</v-btn
           >
         </v-col>
@@ -17,7 +17,7 @@
         >
           <GameCard :created-game="game">
             <template v-slot:actions>
-              <v-btn text @click="onJoinGameClicked(game)">
+              <v-btn text @click="onJoinGameClicked(game)" v-if="currentPlayer">
                 <v-icon left>mdi-login-variant</v-icon>
                 Join
               </v-btn>
@@ -26,7 +26,6 @@
         </v-col>
       </v-row>
       <create-game-dialog v-model="show.gameDialog" />
-      <current-player-dialog v-model="show.playerDialog" />
     </v-container>
   </div>
 </template>
@@ -36,42 +35,26 @@
 
 import CreateGameDialog from "@/components/CreateGameDialog";
 import { mapGetters } from "vuex";
-import CurrentPlayerDialog from "@/components/CurrentPlayerDialog";
 import CardTemplate from "@/models/CardTemplate";
 import CreatedGame from "@/models/CreatedGame";
 import GameCard from "@/components/GameCard";
 
 export default {
   name: "Home",
-  components: { GameCard, CurrentPlayerDialog, CreateGameDialog },
+  components: { GameCard, CreateGameDialog },
   data() {
     return {
       selectedGame: null,
       show: {
-        gameDialog: false,
-        playerDialog: false
+        gameDialog: false
       }
     };
   },
   methods: {
     async onCreateNewGameClicked() {
-      if (this.currentPlayer === null) {
-        this.showCreatePlayerDialog();
-        return;
-      }
-
       this.show.gameDialog = true;
     },
-    showCreatePlayerDialog() {
-      this.$notify("There is no player selected");
-      this.show.playerDialog = true;
-    },
     async onJoinGameClicked(game) {
-      if (this.currentPlayer === null) {
-        this.showCreatePlayerDialog();
-        return;
-      }
-
       try {
         await this.$gameHub.client.invoke(
           "JoinCreatedGame",

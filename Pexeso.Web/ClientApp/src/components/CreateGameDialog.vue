@@ -78,9 +78,10 @@ export default {
       selectedTemplateId: null,
       selectedSize: null,
       sizes: [
-        { id: 1, rows: 4, columns: 4 },
+        { id: 1, rows: 2, columns: 2 },
+        { id: 2, rows: 4, columns: 4 },
         { id: 3, rows: 6, columns: 6 },
-        { id: 5, rows: 8, columns: 8 }
+        { id: 4, rows: 8, columns: 8 }
       ]
     };
   },

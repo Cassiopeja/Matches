@@ -12,19 +12,16 @@
             label="Player name"
             :rules="nameRules"
           >
+            <template v-slot:prepend>
+              <player-avatar v-bind:player="player" />
+            </template>
           </v-text-field>
-          <div class="caption">Avatar color</div>
           <v-color-picker
-            class="ma-2"
-            v-model="player.color"
-            hide-inputs
-            hide-canvas
+              class="ma-2"
+              v-model="player.color"
+              hide-inputs
           ></v-color-picker>
         </v-form>
-      </v-card-text>
-      <v-card-text>
-        <div class="caption">Avatar look</div>
-        <player-avatar v-bind:player="playerForAvatar" />
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -40,7 +37,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import { v4 as uuidv4 } from "uuid";
 import PlayerAvatar from "@/components/PlayerAvatar";
 
@@ -56,8 +53,9 @@ export default {
     return {
       valid: true,
       player: {
+        id: uuidv4(),
         name: "",
-        color: {}
+        color: "#FF0000"
       },
       errors: []
     };
@@ -68,17 +66,13 @@ export default {
       this.errors = [];
       this.$refs.form.validate();
       if (this.valid) {
-        const newPlayer = {
-          id: uuidv4(),
-          name: this.player.name,
-          color: this.player.color.hex
-        };
-        this.setCurrentPlayer(newPlayer);
+        this.setCurrentPlayer(this.player);
         this.show = false;
       }
     }
   },
   computed: {
+    ...mapGetters(["currentPlayer"]),
     show: {
       get() {
         return this.value;
@@ -95,23 +89,11 @@ export default {
           "Name field should not contain more that 128 symbols"
       ];
     },
-    showColor() {
-      if (typeof this.player.color === "string") return this.player.color;
-
-      return JSON.stringify(
-        Object.keys(this.player.color).reduce((color, key) => {
-          color[key] = Number(this.color[key].toFixed(2));
-          return color;
-        }, {}),
-        null,
-        2
-      );
-    },
-    playerForAvatar() {
-      return {
-        name: this.player.name,
-        color: this.player.color.hex
-      };
+  },
+  beforeMount() {
+    if (this.currentPlayer)
+    {
+      Object.assign(this.player, this.currentPlayer);
     }
   }
 };
