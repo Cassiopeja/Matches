@@ -54,13 +54,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 
 ### Built With
 
 * [ASP.NET Core](https://dotnet.microsoft.com/learn/aspnet/what-is-aspnet-core)
-* [SignalR](https://docs.microsoft.com/en-us/aspnet/core/tutorials/signalr?view=aspnetcore-5.0&tabs=visual-studio)
+* [ASP.NET Core SignalR](https://docs.microsoft.com/en-us/aspnet/core/tutorials/signalr?view=aspnetcore-5.0&tabs=visual-studio)
 * [Vue.js](https://vuejs.org/)
 * [Vuetify](https://vuetifyjs.com/)
 
