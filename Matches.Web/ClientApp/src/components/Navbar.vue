@@ -6,14 +6,19 @@
       </span>
     </v-app-bar-title>
     <v-spacer />
-    <div style="cursor: pointer" @click="createPlayer">
-      <player-avatar
-        v-if="currentPlayer"
-        :player="currentPlayer"
-        size="32"
-      ></player-avatar>
-      <div v-else>Create player</div>
-    </div>
+    <v-toolbar-items>
+      <v-btn
+          text
+          @click="createPlayer"
+      >
+        <player-avatar
+            v-if="currentPlayer"
+            :player="currentPlayer"
+            size="32"
+        ></player-avatar>
+        <div v-else>Create player</div>
+      </v-btn>
+    </v-toolbar-items>
     <current-player-dialog v-model="show.playerDialog" />
   </v-app-bar>
 </template>
