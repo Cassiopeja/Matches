@@ -10,14 +10,15 @@
 <br />
 <p align="center">
   <a href="https://github.com/Cassiopeja/matches">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo.jpg" alt="Logo" width="80" height="80">
   </a>
+</p>
 
 <h3 align="center">Matches</h3>
 
   <p align="center">
     I used to play a lot in memory games in my childhood. 
-    I wanted to learn more about ASP.NET Core SignalR and decided to write my version of memory game.
+    I wanted to learn more about ASP.NET Core SignalR and decided to write my version of a memory game.
     <br />
     <br />
     <a href="https://play-matches.herokuapp.com/">View Demo</a>
@@ -26,7 +27,6 @@
     ·
     <a href="https://github.com/Cassiopeja/matches/issues">Request Feature</a>
   </p>
-</p>
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
@@ -45,7 +45,6 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
@@ -99,14 +98,6 @@ Download and install .NET 5 on your computer. See instructions  [here](https://d
    npm install
    ```
 
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -132,7 +123,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
-* All card sets for the game were drawn by lovely 3D.Dasha. :-)
+* All card sets for the game were drawn by lovely Dasha.3D. :-)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
