@@ -126,7 +126,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[issues-shield]: https://img.shields.io/github/issues/Cassiopeja/matches.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/Cassiopeja/Matches.svg?style=for-the-badge
 [issues-url]: https://github.com/Cassiopeja/matches/issues
-[license-shield]: https://img.shields.io/github/license/Cassiopeja/matches.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/Cassiopeja/Matches.svg?style=for-the-badge
 [license-url]: https://github.com/Cassiopeja/matches/blob/master/LICENSE.md
