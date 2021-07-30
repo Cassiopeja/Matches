@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pexeso.Contracts.Dto;
@@ -33,13 +34,13 @@ namespace Pexeso.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<CardTemplateDto> GetById(string templateId)
         {
-            var template = _gameManager.CardTemplates.FirstOrDefault(t => t.Id == templateId);
-            if (template == null)
+            var (_, isFailure, cardTemplate) = _gameManager.FindCardTemplate(templateId);
+            if (isFailure)
             {
                 return NotFound();
             }
 
-            var response = _mapper.Map<CardTemplateDto>(template);
+            var response = _mapper.Map<CardTemplateDto>(cardTemplate);
 
             return Ok(response);
         }

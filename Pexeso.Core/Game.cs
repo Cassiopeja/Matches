@@ -136,7 +136,7 @@ namespace Pexeso.Core
             _board.RemoveCard(index);
         }
 
-        private static List<Player> ShuffledPlayers(IReadOnlyList<Player> players)
+        private static List<Player> ShuffledPlayers(IEnumerable<Player> players)
         {
             var shuffledPlayers = players.ToList();
             shuffledPlayers.Shuffle();

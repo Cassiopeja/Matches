@@ -54,7 +54,7 @@ namespace Pexeso.Core
             return board;
         }
 
-        private Card[] CreateBoard(List<Card> pile)
+        private Card[] CreateBoard(IReadOnlyList<Card> pile)
         {
             var board = new Card[pile.Count];
 

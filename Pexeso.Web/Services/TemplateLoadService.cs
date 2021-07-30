@@ -36,7 +36,7 @@ namespace Pexeso.Services
             foreach (var cardTemplate in templates)
             {
                 var result = gameManager.AddCardTemplate(cardTemplate);
-                if (result.IsFailure) logger.LogError(result.Error);
+                if (result.IsFailure) logger.LogError("Error during adding card template: {Error}", result.Error);
             }
 
             return Task.CompletedTask;

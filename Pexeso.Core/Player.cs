@@ -5,7 +5,7 @@ namespace Pexeso.Core
         public string Id { get; }
         public string Name { get; }
         public string Color { get; }
-        public int Score { get; set; } = 0;
+        public int Score { get; set; }
 
         public Player(string id, string name, string color)
         {

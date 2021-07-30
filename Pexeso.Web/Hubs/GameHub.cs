@@ -22,16 +22,16 @@ namespace Pexeso.Hubs
 
         public async Task<CreatedGameDto> CreateGame(GameParametersDto parameters, NewPlayerDto newPlayerDto)
         {
-            var template =
-                _gameManager.CardTemplates.FirstOrDefault(cardTemplate => cardTemplate.Id == parameters.TemplateId);
+            var templateResult =
+                _gameManager.FindCardTemplate(parameters.TemplateId);
 
-            if (template == null)
-                throw new HubException($"The card template with id {parameters.TemplateId} has not been found");
+            if (templateResult.IsFailure)
+                throw new HubException(templateResult.Error);
 
-            var gameParameters = new GameParameters(parameters.Rows, parameters.Columns, template);
+            var gameParameters = new GameParameters(parameters.Rows, parameters.Columns, templateResult.Value);
             var player = new Player(newPlayerDto.Id, newPlayerDto.Name, newPlayerDto.Color);
-            var (_, isFailure, game) = _gameManager.CreateNewGame(gameParameters, player);
-            if (isFailure) throw new HubException("Can not create game");
+            var (_, isFailure, game, error) = _gameManager.CreateNewGame(gameParameters, player);
+            if (isFailure) throw new HubException(error);
 
             var createdGameDto = _mapper.Map<CreatedGameDto>(game);
             await Groups.AddToGroupAsync(Context.ConnectionId, game.Id);
@@ -43,7 +43,7 @@ namespace Pexeso.Hubs
         {
             var game = FindCreatedGame(gameId);
             var player = new Player(newPlayerDto.Id, newPlayerDto.Name, newPlayerDto.Color);
-            if (game.Players.Any(pl => pl.Id == player.Id))
+            if (game.FindPlayer(player.Id).IsSuccess)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
                 return;
@@ -139,13 +139,13 @@ namespace Pexeso.Hubs
 
         public async Task ConnectToGame(string gameId)
         {
-            var game = FindStartedGame(gameId);
+            FindStartedGame(gameId);
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
         }
         
         public async Task ConnectToCreatedGame(string gameId)
         {
-            var game = FindCreatedGame(gameId);
+            FindCreatedGame(gameId);
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
         }
     }

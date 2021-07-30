@@ -37,8 +37,7 @@ namespace Pexeso.Core
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Card) obj);
+            return obj.GetType() == GetType() && Equals((Card) obj);
         }
 
         public override int GetHashCode()

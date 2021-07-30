@@ -32,18 +32,18 @@ namespace Pexeso.Infrastructure
         public Result<CreatedGame> CreateNewGame(GameParameters gameParameters, Player player)
         {
             var game = new CreatedGame(gameParameters, player, _dateTimeService.Now);
-            if (!_createdGames.TryAdd(game.Id, game)) Result.Failure("Can not create new game");
-
-            return Result.Success(game);
+            return !_createdGames.TryAdd(game.Id, game) 
+                ? Result.Failure<CreatedGame>("It is not possible to create a new game") 
+                : Result.Success(game);
         }
 
         public Result<Game> StartGame(string gameId, string playerId)
         {
-            var result = FindCreatedGame(gameId);
-            if (result.IsFailure) return Result.Failure<Game>(result.Error);
+            var (_, isFailure, game, error) = FindCreatedGame(gameId);
+            if (isFailure) return Result.Failure<Game>(error);
 
-            var player = result.Value.Players.FirstOrDefault(pl => pl.Id == playerId);
-            if (player == null) return Result.Failure<Game>("Player does not have permissions to start game");
+            var result = game.FindPlayer(playerId);
+            if (result.IsFailure) return Result.Failure<Game>("Player does not have permissions to start game");
 
             if (_createdGames.TryRemove(gameId, out var createdGame))
             {
@@ -53,39 +53,44 @@ namespace Pexeso.Infrastructure
                 _createdGames.TryAdd(createdGame.Id, createdGame);
             }
 
-            return Result.Failure<Game>("Something happened");
+            return Result.Failure<Game>("Something happened while starting the game");
         }
 
         public Result FinishGame(string gameId)
         {
-            if (_startedGames.TryRemove(gameId, out _)) return Result.Success();
-
-            return Result.Failure("Something happened");
+            return _startedGames.TryRemove(gameId, out _)
+                ? Result.Success()
+                : Result.Failure("Something happened while finishing the game");
         }
 
         public Result<CreatedGame> FindCreatedGame(string gameId)
         {
-            if (_createdGames.TryGetValue(gameId, out var createdGame)) return Result.Success(createdGame);
-
-            return Result.Failure<CreatedGame>($"The game with id {gameId} has not been found");
+            return _createdGames.TryGetValue(gameId, out var createdGame)
+                ? Result.Success(createdGame)
+                : Result.Failure<CreatedGame>($"The created game with id {gameId} has not been found");
         }
 
         public Result<Game> FindStartedGame(string gameId)
         {
-            if (_startedGames.TryGetValue(gameId, out var game)) return Result.Success(game);
+            return _startedGames.TryGetValue(gameId, out var game)
+                ? Result.Success(game)
+                : Result.Failure<Game>($"The game with id {gameId} has not been found");
+        }
 
-            return Result.Failure<Game>($"The game with id {gameId} has not been found");
+        public Result<CardTemplate> FindCardTemplate(string cardTemplateId)
+        {
+            return _cardTemplates.TryGetValue(cardTemplateId, out var gameTemplate)
+                ? Result.Success(gameTemplate)
+                : Result.Failure<CardTemplate>($"The card template with id {cardTemplateId} has not been found");
         }
 
         public Result AddCardTemplate(CardTemplate cardTemplate)
         {
             if (cardTemplate == null) throw new ArgumentNullException(nameof(cardTemplate));
-            if (_cardTemplates.ContainsKey(cardTemplate.Name))
-                return Result.Failure("Card template with this name is already added");
 
-            if (_cardTemplates.TryAdd(cardTemplate.Name, cardTemplate)) return Result.Success();
-
-            return Result.Failure("Something happened while adding card template");
+            return _cardTemplates.TryAdd(cardTemplate.Id, cardTemplate)
+                ? Result.Success()
+                : Result.Failure($"Card template with id {cardTemplate.Id} is already added");
         }
 
         public Result<bool> CloseCreatedGameIfNoPlayers(string gameId)
