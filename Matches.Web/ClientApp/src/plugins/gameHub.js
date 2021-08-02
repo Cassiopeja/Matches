@@ -1,7 +1,9 @@
 import { HubConnectionBuilder } from "@microsoft/signalr";
+const eventEmitter = require("events");
 
-class GameHub {
+class GameHub  extends eventEmitter {
   constructor() {
+    super();
     this.client = new HubConnectionBuilder()
       .withUrl("/gameHub")
       .withAutomaticReconnect()
@@ -9,7 +11,12 @@ class GameHub {
   }
 
   start() {
-    this.client.start();
+    this.client.start().
+    then(()=> {
+      if (this.client.state === "Connected"){
+        this.emit("ConnectedToHub");
+      }
+    });
   }
 }
 

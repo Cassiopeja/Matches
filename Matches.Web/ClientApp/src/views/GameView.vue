@@ -66,29 +66,12 @@ export default {
       await Game.refresh(this.id);
       this.enableMovesIfCurrentPlayerIsPlaying();
     },
-    async fullGameAndHubReload() {
-      await Game.refresh(this.id);
+    async connectToGame() {
       try {
         await this.$gameHub.client.invoke("ConnectToGame", this.id);
       } catch (e) {
         console.error(e);
         this.$notify({ title: e });
-      }
-      this.enableMovesIfCurrentPlayerIsPlaying();
-    },
-    async reconnectAndReload() {
-      if (this.$gameHub.client.state === "Connecting") {
-        while (
-          this.$gameHub.client.state !== "Connected" &&
-          this.$gameHub.client.state !== "Disconnected"
-        ) {
-          await this.delay(1000);
-        }
-      }
-      if (this.$gameHub.client.state === "Disconnected") {
-        console.error("Can not connect to hub");
-      } else {
-        await this.fullGameAndHubReload();
       }
     },
     async onCardClicked(index) {
@@ -118,11 +101,8 @@ export default {
     },
   },
   async beforeMount() {
-    if (this.$gameHub.client.state === "Connected") {
-      await this.gameReload();
-    } else {
-      await this.reconnectAndReload();
-    }
+    this.$gameHub.on("ConnectedToHub", () => this.connectToGame());
+    await this.gameReload();
 
     this.$gameHub.client.on("GroupPlayerOpenedCard", async (player, move) => {
       if (this.game.isFirstMove()) {
@@ -165,7 +145,8 @@ export default {
       }
     );
     this.$gameHub.client.onreconnected(async () => {
-      await this.fullGameAndHubReload();
+      await this.gameReload();
+      await this.connectToGame();
     });
   },
   beforeDestroy() {
@@ -173,6 +154,7 @@ export default {
     this.$gameHub.client.off("GroupPlayerOpenedTwoEqualsCards");
     this.$gameHub.client.off("GroupNextPlayer");
     this.$gameHub.client.off("GroupGameIsFinished");
+    this.$gameHub.off("ConnectedToHub", () => this.connectToGame());
   }
 };
 </script>

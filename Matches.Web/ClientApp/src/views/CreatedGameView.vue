@@ -33,6 +33,8 @@ export default {
     async reloadCreatedGame() {
       await CreatedGame.refresh(this.id);
       await CardTemplate.require(this.createdGame.cardTemplateId);
+    },
+    async connectToGame() {
       try {
         await this.$gameHub.client.invoke("ConnectToCreatedGame", this.id);
       } catch (e) {
@@ -89,6 +91,7 @@ export default {
       next();
   },
   async beforeMount() {
+    this.$gameHub.on("ConnectedToHub", () => this.connectToGame());
     await this.reloadCreatedGame();
     this.$gameHub.client.on("GroupPlayerJoinedCreatedGame", async (player) => {
       await this.createdGame.addPlayer(player);
@@ -103,11 +106,17 @@ export default {
     this.$gameHub.client.on("GroupGameStarted", () => {
       this.onGameStart();
     });
+    this.$gameHub.client.onreconnected(async () => {
+      await this.reloadCreatedGame();
+      await this.connectToGame();
+    });
+    
   },
   beforeDestroy() {
     this.$gameHub.client.off("GroupPlayerJoinedCreatedGame");
     this.$gameHub.client.off("GroupPlayerLeftCreatedGame");
     this.$gameHub.client.off("GroupGameStarted");
+    this.$gameHub.off("ConnectedToHub", () => this.connectToGame());
   }
 };
 </script>
