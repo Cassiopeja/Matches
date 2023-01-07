@@ -21,8 +21,6 @@
     I wanted to learn more about ASP.NET Core SignalR and decided to write my version of a memory game.
     <br />
     <br />
-    <a href="https://play-matches.herokuapp.com/">View Demo</a>
-    ·
     <a href="https://github.com/Cassiopeja/matches/issues">Report Bug</a>
     ·
     <a href="https://github.com/Cassiopeja/matches/issues">Request Feature</a>
